@@ -4,12 +4,17 @@ var net = require('net');
 //var readline = require('readline');
 // var rl = readline.createInterface(process.stdin, process.stdout);
 // rl.setPrompt('Please enter your message: ');var client = new net.Socket();
-
+var client = new net.Socket();
 client.setKeepAlive(true);
 
 client.connect(4040, '192.168.43.172', function(){
   console.log('Connected to remote Server');
   client.write('This is a message');
+
+  setInterval(function(){
+    console.log('Streaming Data');
+    client.write('{x:0, y:5, ID:"JonBlueTooth"}');
+  },200);
 
   // rl.prompt();
   // rl.on('line', function(line){
