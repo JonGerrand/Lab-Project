@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+  <head>
+    <title>Trial</title>
+    </head>
+  <body>
+    <div id="Div"></div>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io();
+    socket.on('httpServer', function(msg){
+      $('#Div').append($('<li>').text(msg));
+    });
+    </script>
+  </body>
+</html>
