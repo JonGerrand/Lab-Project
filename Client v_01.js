@@ -6,14 +6,18 @@ var net = require('net');
 // rl.setPrompt('Please enter your message: ');var client = new net.Socket();
 var client = new net.Socket();
 client.setKeepAlive(true);
+var xData = 0;
 
-client.connect(4040, '192.168.43.172', function(){
+client.connect(4040, '192.168.43.97', function(){
   console.log('Connected to remote Server');
   client.write('This is a message');
 
+  // TODO There will have to be a throttling mechanism in place for the HTTP
+  //  server for when the data rate received from the network is less than 190ms
   setInterval(function(){
     console.log('Streaming Data');
-    client.write('{x:0, y:5, ID:"JonBlueTooth"}');
+    xData = xData +1;
+    client.write(xData.toString());
   },200);
 
   // rl.prompt();
