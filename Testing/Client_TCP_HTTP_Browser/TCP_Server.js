@@ -1,6 +1,6 @@
 var net = require('net');
 
-var HOST = '192.168.1.100';
+var HOST = '192.168.43.97';
 var PORT = 4040;
 
 //Place a listening notification here
