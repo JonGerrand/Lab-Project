@@ -1,7 +1,7 @@
 var net = require('net');
 
 // Code for writing from a multiple times
-//var readline = require('readline');
+// var readline = require('readline');
 // var rl = readline.createInterface(process.stdin, process.stdout);
 // rl.setPrompt('Please enter your message: ');var client = new net.Socket();
 var client = new net.Socket();
