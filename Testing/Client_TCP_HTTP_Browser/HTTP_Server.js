@@ -5,7 +5,7 @@ var tcpSock = require('net');
 
 var http_port = 8888;
 
-var tcp_HOST = '192.168.43.97';
+var tcp_HOST = '192.168.43.63';
 var tcp_PORT = 4040;
 
 //Http Server Code
@@ -32,8 +32,12 @@ webSock.sockets.on('connection', function(socket){
   tcpClient.setKeepAlive(true);
 
   tcpClient.connect(tcp_PORT, tcp_HOST, function(){
+    //Establish SINK status
+    tcpClient.write("SINK");
+    //Connection details
     console.info("HTTP Server connected to: " + tcp_HOST);
 
+    //Data repetition
     tcpClient.on('data', function(data){
       console.log("Recieved Server Data: " + data);
       socket.emit("httpServer", data);
