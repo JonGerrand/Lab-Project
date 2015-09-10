@@ -1,0 +1,6 @@
+Laptop:
+	IP:		192.168.0.1
+	NetMask:	255.255.255.0
+Pi:
+	IP:(Possibly)	192.168.0.2
+	NetMask:	255.255.255.0
