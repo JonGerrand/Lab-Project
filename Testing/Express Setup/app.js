@@ -3,6 +3,8 @@
 //  AUTHOR:   J.Gerrand 349361
 //  COMMENTS: Fufills the role of the DVM within the Pedestrian Viz System
 // -----------------------------------------------------------------------------
+
+// Load dependencies
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -22,7 +24,7 @@ var app = express();
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.43.172';
+var tcp_HOST = '192.168.1.3';
 
 //----------Socket.io-------------------
 var webSock = socket_io();
@@ -33,16 +35,17 @@ webSock.sockets.on("connection", function(socket)
 {
   console.log("A socket connected!");
 
-  //TCP Client creattion
+  // TCP Client creattion
   var tcpClient = new tcpSock.Socket();
   tcpClient.setEncoding("ascii");
   tcpClient.setKeepAlive(true);
 
-  //TCP connection
+  // TCP connection
   tcpClient.connect(tcp_PORT, tcp_HOST, function(){
-    console.info("HTTP Server connected to: " + tcp_HOST);
     tcpClient.write("SINK");
+    console.info("HTTP Server connected to: " + tcp_HOST);
 
+    // Emit data to Websockets
     tcpClient.on('data', function(data){
       console.log("Recieved Server Data: " + data);
       socket.emit("httpServer_ord", data);

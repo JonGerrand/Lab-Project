@@ -8,9 +8,10 @@
 var net = require('net');
 
 //Set SARM Parameters
-var HOST = '192.168.43.172';
+var HOST = '192.168.1.3';
 var PORT = 4040;
 sinkList = [];
+var replicated = 0;
 
 //----====Helper Functions====------
 
@@ -32,15 +33,16 @@ TCPserver.on('connection', function(sock){
 
   //-==I/O Handling==-
   sock.on('data', function(data){
-    console.log(data);
-    //Output data to Sinks
-    for (var i = 0; i < sinkList.length; i++) {
-      sinkList[i].write(data);
+    // Output data to Sinks
+    if(data != "SINK"){
+      for (var i = 0; i < sinkList.length; i++) {
+        sinkList[i].write(data);
+      }
     }
-    //Agent type-definition
-    if(data === 'SINK'){
+    // Agent type-definition
+    if(data === "SINK"){
       var replicated = 0;
-      //Verify new connection
+      // Verify new connection
       for (var i = 0; i < sinkList.length; i++) {
         if(sinkList[i].remoteAddress === sock.remoteAddress){
           replicated = 1;
@@ -61,7 +63,7 @@ TCPserver.on('connection', function(sock){
   //-==Error Handling==-
   sock.on('error', function(error){
     console.log("A Sink has been disconnected");
-    sinkList.pop();
+    sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
   });//Error Handling
 
 }).listen(PORT, HOST); //SARM event definitions
