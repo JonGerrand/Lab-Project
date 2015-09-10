@@ -8,7 +8,7 @@ var client = new net.Socket();
 client.setKeepAlive(true);
 var xData = 0;
 
-client.connect(4040, '192.168.43.97', function(){
+client.connect(4040, '192.168.43.172', function(){
   console.log('Connected to remote Server');
   client.write('This is a message');
 
