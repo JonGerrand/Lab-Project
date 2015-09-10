@@ -5,7 +5,7 @@ var tcpSock = require('net');
 
 var http_port = 8888;
 
-var tcp_HOST = '192.168.43.63';
+var tcp_HOST = '192.168.43.172';
 var tcp_PORT = 4040;
 
 //Http Server Code
