@@ -5,10 +5,20 @@
 // -----------------------------------------------------------------------------
 
 //----====Helper Functions====------
-var getTimeStamp = function(){
-  var d = new Date();
-  return d.getDate() + ":" + d.getHours() + ":" + d.getMinutes() + ":" +
-         d.getSeconds() + ":" + d.getMilliseconds();
+var getTimeStamp = function(dateInfo){
+  if(dateInfo === 0){
+    var d = new Date();
+  } else{
+     var d = new Date(dateInfo);
+  }
+  return d.getYear() + ":" + d.getMonth() + ":" + d.getDate() + ":" + d.getHours() +
+          ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
+};
+
+var convertMsToTimestamp = function(msString){
+  var recvTime = parseFloat(msString);
+  recvTime = recvTime*1000;
+  return getTimeStamp(recvTime);
 };
 //----------------------------------
 
@@ -76,7 +86,10 @@ TCPserver.on('connection', function(sock){
 
   //-==I/O Handling==-
   sock.on('data', function(data){
-    console.log(data + ",SARM" + getTimeStamp());
+    // Testing
+    var Gateway = convertMsToTimestamp(data);
+    var Sarm = getTimeStamp(0);
+    console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
     // Output data to Sinks
     if(data != "SINK"){
       for (var i = 0; i < sinkList.length; i++) {
