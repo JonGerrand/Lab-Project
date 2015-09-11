@@ -1,7 +1,7 @@
-window.onload = function() {
+// window.onload = function() {
 
-  var socket = io();
-  socket.on('httpServer_msg', function(msg){
+  var Websocket = io();
+  Websocket.on('httpServer_msg', function(msg){
     console.log(msg);
   });
 
@@ -16,6 +16,11 @@ window.onload = function() {
   });
   var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
+  Websocket.on('httpServer_ord', function(ord){
+    console.log('Received Co-ord:' + ord);
+    // heatmap.addData({ x: 10*parseInt(ord), y: 250, value: 1 });
+  });
+
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
     // we need preventDefault for the touchmove
     e.preventDefault();
@@ -26,16 +31,11 @@ window.onload = function() {
       y = e.touches[0].pageY;
     }
 
-    heatmap.addData({ x: x, y: 250, value: 1 });
-
-    //Update Co-ords via remote TCP server
-    //TODO Performing single updates here seems far too slow
-    // Server-side... Try Performing bulk-uploads to the server
-    // perhaps.
-    socket.on('httpServer_ord', function(ord){
-      console.log('Received Co-ord:' + ord);
-      heatmap.addData({ x: 10*parseInt(ord), y: 250, value: 1 });
-    });
+    heatmap.addData({ x: x, y: y, value: 1 });
+    // Websocket.on('httpServer_ord', function(ord){
+    //   console.log('Received Co-ord:' + ord);
+    //   heatmap.addData({ x: 10*parseInt(ord), y: 250, value: 1 });
+    // });
 
   };
 
@@ -44,4 +44,4 @@ window.onload = function() {
     var y = e.layerY;
     heatmap.addData({ x: x, y: y, value: 1 });
   };
-};
+// };

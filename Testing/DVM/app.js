@@ -4,6 +4,24 @@
 //  COMMENTS: Fufills the role of the DVM within the Pedestrian Viz System
 // -----------------------------------------------------------------------------
 
+//----====Helper Functions====------
+var getTimeStamp = function(dateInfo){
+  if(dateInfo === 0){
+    var d = new Date();
+  } else{
+     var d = new Date(dateInfo);
+  }
+  return d.getYear() + ":" + d.getMonth() + ":" + d.getDate() + ":" + d.getHours() +
+          ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
+};
+
+var convertMsToTimestamp = function(msString){
+  var recvTime = parseFloat(msString);
+  recvTime = recvTime*1000;
+  return getTimeStamp(recvTime);
+};
+//----------------------------------
+
 // Load dependencies
 var express = require('express');
 var path = require('path');
@@ -24,7 +42,7 @@ var app = express();
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.3';
+var tcp_HOST = '192.168.1.2';
 
 //----------Socket.io-------------------
 var webSock = socket_io();
@@ -47,8 +65,11 @@ webSock.sockets.on("connection", function(socket)
 
     // Emit data to Websockets
     tcpClient.on('data', function(data){
-      console.log("Recieved Server Data: " + data);
-      socket.emit("httpServer_ord", data);
+      console.log("HTTP Received: " + data);
+      var HTTPServer = getTimeStamp(0);
+      socket.emit("httpServer_ord", data + ", DVM: " + HTTPServer);
+      socket.emit("httpServer_alert", data);
+      socket.emit("httpServer_msg", "1")
     });
 
     tcpClient.on('end', function(data){
@@ -72,18 +93,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-
-//Testing with MongoDB
-// mongoose.connect('mongodb://127.0.0.1/NodeDatabase');
-// console.log("Connected to MongoDB");
-
-// mongoose.model('users', {name: String});
-
-// app.get('/users', function(req, res){
-//   mongoose.model('users').find(function(err, users){
-//     res.send(users[1]["name"])
-//   });
-// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

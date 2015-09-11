@@ -136,7 +136,7 @@
                 <!-- Alerts-->
                 <!-- These should be populated using jQuery-->
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" id="areaAlertMessage">
                         <div class="alert alert-danger alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <i class="fa fa-info-circle"></i>  <strong>Warning!</strong> Unauthorized area entry
@@ -249,10 +249,12 @@
     <script src="js/plugins/morris/morris.min.js"></script>
     <script src="js/plugins/morris/morris-data.js"></script>
 
-    <!--  Heatmap Javascript-->
+    <!--  Heatmap Javascript -->
     <script src='js/heatmap.js'></script>
     <script src='js/liveHeatmap.js'></script>
 
+    <!--  Live Updates -->
+    <script src='js/liveAlert.js'></script>
 
 </body>
 

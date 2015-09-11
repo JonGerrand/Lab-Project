@@ -27,7 +27,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.3';
+var HOST = '192.168.1.2';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -86,14 +86,14 @@ TCPserver.on('connection', function(sock){
 
   //-==I/O Handling==-
   sock.on('data', function(data){
-    // Testing
-    var Gateway = convertMsToTimestamp(data);
-    var Sarm = getTimeStamp(0);
-    console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
     // Output data to Sinks
     if(data != "SINK"){
+      // Testing
+      var Gateway = convertMsToTimestamp(data);
+      var Sarm = getTimeStamp(0);
+      console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
       for (var i = 0; i < sinkList.length; i++) {
-        sinkList[i].write(data + ",SARM" + getTimeStamp());
+        sinkList[i].write("Gateway:" + Gateway + ", SARM: " + Sarm);
       }
     }
     // Agent type-definition
