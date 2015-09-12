@@ -49,8 +49,7 @@ var webSock = socket_io();
 app.io = webSock;
 
 //Websocket connection handling
-webSock.sockets.on("connection", function(socket)
-{
+webSock.sockets.on("connection", function(socket){
   console.log("A socket connected!");
 
   // TCP Client creattion
@@ -62,7 +61,8 @@ webSock.sockets.on("connection", function(socket)
   tcpClient.connect(tcp_PORT, tcp_HOST, function(){
     tcpClient.write("SINK");
     console.info("HTTP Server connected to: " + tcp_HOST);
-
+    // Connection message to browser
+    socket.emit("httpServer_msg", "Connected to HTTP Server");
     // Emit data to Websockets
     tcpClient.on('data', function(data){
       console.log("HTTP Received: " + data);
@@ -70,15 +70,16 @@ webSock.sockets.on("connection", function(socket)
       socket.emit("httpServer_ord", data + ", DVM: " + HTTPServer);
       socket.emit("httpServer_alert", data);
       socket.emit("httpServer_msg", "1")
-    });
-
-    tcpClient.on('end', function(data){
-      console.log("End data: " + data);
+      });
+    // Web socket closed
+    socket.on('disconnect',function(){
+      clearInterval(interval);
+      tcpClient.destroy();
+      });
     });
   });
 
-  socket.emit("httpServer_msg", "Initial Data");
-});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

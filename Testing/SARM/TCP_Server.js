@@ -112,15 +112,35 @@ TCPserver.on('connection', function(sock){
         sinkList.push(sock);
       }
     } //Agent type-definition
-
     //TODO Aggregation functions
-
   }); //IO Handling
 
-  //-==Error Handling==-
+  //-==Error and Exit Handling==-
   sock.on('error', function(error){
-    sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
-    console.log("A Sink has been disconnected");
+    // Determine if Sink was disconnected
+    var remove = 0;
+    for (var i = 0; i < sinkList.length; i++) {
+      if(sinkList[i].remoteAddress === sock.remoteAddress){
+        remove = 1;
+      }
+    }
+    if(remove != 0){
+      sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
+      console.log("A Sink has been disconnected");
+    }
   });//Error Handling
+  sock.on('close', function(error){
+    // Determine if Sink was disconnected
+    var remove = 0;
+    for (var i = 0; i < sinkList.length; i++) {
+      if(sinkList[i].remoteAddress === sock.remoteAddress){
+        remove = 1;
+      }
+    }
+    if(remove != 0){
+      sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
+      console.log("A Sink has been disconnected");
+    }
+  });//Exit Handling
 
 }).listen(PORT, HOST); //SARM event definitions
