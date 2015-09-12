@@ -4,6 +4,16 @@
 //  COMMENTS: Fufills the role of the SARM within the Pedestrian System
 // -----------------------------------------------------------------------------
 
+//Load dependencies
+var net = require('net');
+var mongoose = require('mongoose');
+
+//Set SARM Parameters
+var HOST = '192.168.43.192';
+var PORT = 4040;
+sinkList = [];
+var replicated = 0;
+
 //----====Helper Functions====------
 var getTimeStamp = function(dateInfo){
   if(dateInfo === 0){
@@ -21,16 +31,6 @@ var convertMsToTimestamp = function(msString){
   return getTimeStamp(recvTime);
 };
 //----------------------------------
-
-//Load dependencies
-var net = require('net');
-var mongoose = require('mongoose');
-
-//Set SARM Parameters
-var HOST = '192.168.1.2';
-var PORT = 4040;
-sinkList = [];
-var replicated = 0;
 
 //-==Establish MongoBD connection==-
 // mongoose.connect('mongodb://192.168.1.4/PedestrianTestingDB');
