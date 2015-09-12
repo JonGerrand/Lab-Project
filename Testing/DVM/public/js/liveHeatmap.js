@@ -32,11 +32,6 @@
     }
 
     heatmap.addData({ x: x, y: y, value: 1 });
-    // Websocket.on('httpServer_ord', function(ord){
-    //   console.log('Received Co-ord:' + ord);
-    //   heatmap.addData({ x: 10*parseInt(ord), y: 250, value: 1 });
-    // });
-
   };
 
   heatmapContainer.onclick = function(e) {

@@ -4,6 +4,28 @@
 //  COMMENTS: Fufills the role of the DVM within the Pedestrian Viz System
 // -----------------------------------------------------------------------------
 
+// Load dependencies
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var socket_io = require('socket.io');
+var tcpSock = require('net');
+
+//SARM connection configuration
+var tcp_PORT = 4040;
+var tcp_HOST = '192.168.43.192';
+
+//Routing Config for express
+var routes = require('./routes/index');
+//var users = require('./routes/users');
+
+//Bind express object to App object
+var app = express();
+
 //----====Helper Functions====------
 var getTimeStamp = function(dateInfo){
   if(dateInfo === 0){
@@ -22,27 +44,7 @@ var convertMsToTimestamp = function(msString){
 };
 //----------------------------------
 
-// Load dependencies
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var socket_io = require('socket.io');
-var tcpSock = require('net');
 
-//Routing Config for express
-var routes = require('./routes/index');
-//var users = require('./routes/users');
-
-//Bind express object to App object
-var app = express();
-
-//SARM connection configuration
-var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.2';
 
 //----------Socket.io-------------------
 var webSock = socket_io();
@@ -73,7 +75,7 @@ webSock.sockets.on("connection", function(socket){
       });
     // Web socket closed
     socket.on('disconnect',function(){
-      clearInterval(interval);
+      clearInterval();
       tcpClient.destroy();
       });
     });

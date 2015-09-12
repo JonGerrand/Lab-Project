@@ -1,7 +1,49 @@
-// var Alertsocket = io();
+// -=Function declarations=-
+
+// Creates an Dismissable notification of varying types
+var generateNotificationAlert = function(type, msg){
+  if(type === 'Danger'){
+    $('#areaAlertMessage')
+    .append($('<div class="alert alert-danger alert-dismissable">')
+    .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
+    .append('<i class="fa fa-info-circle"></i> <strong>Danger!</strong>')
+    .append(" " + msg));
+  }
+  if(type === 'Info'){
+    $('#areaAlertMessage')
+    .append($('<div class="alert alert-info alert-dismissable">')
+    .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
+    .append('<i class="fa fa-info-circle"></i> <strong>Info!</strong>')
+    .append(" " + msg));
+  }
+  if(type === 'Warning'){
+    $('#areaAlertMessage')
+    .append($('<div class="alert alert-warning alert-dismissable">')
+    .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
+    .append('<i class="fa fa-info-circle"></i> <strong>Warning!</strong>')
+    .append(" " + msg));
+  }
+  if(type === 'Success'){
+    $('#areaAlertMessage')
+    .append($('<div class="alert alert-success alert-dismissable">')
+    .append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>')
+    .append('<i class="fa fa-info-circle"></i> <strong>Info!</strong>')
+    .append(" " + msg));
+  }
+};
+
+var setPanelAlert = function(toggle){
+  if(toggle === "on"){
+    $('#liveHeatmapPanel').attr('class','panel panel-danger');
+  }
+  if(toggle === "off"){
+    $('#liveHeatmapPanel').attr('class','panel panel-info');
+  }
+};
+
 Websocket.on('httpServer_alert', function(msg){
   console.log("Alert");
-  $('#areaAlertMessage').append('<div class="alert alert-danger alert-dismissable">');
-  $('#areaAlertMessage').append('<i class="fa fa-info-circle"></i> <strong>Warning!</strong> Unauthorized area entry');
-  $('#areaAlertMessage').append('</div>');
+  generateNotificationAlert('Success',msg);
+  setPanelAlert("on");
+  setTimeout(function(){setPanelAlert("off")},2000);
 });
