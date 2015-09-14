@@ -41,6 +41,7 @@ var setPanelAlert = function(toggle){
   }
 };
 
+// Function implementation
 Websocket.on('httpServer_alert', function(msg){
   console.log("Alert");
   generateNotificationAlert('Success',msg);

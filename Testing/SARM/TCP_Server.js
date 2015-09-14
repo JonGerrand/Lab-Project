@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.43.192';
+var HOST = '192.168.1.3';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -32,25 +32,29 @@ var convertMsToTimestamp = function(msString){
 };
 //----------------------------------
 
+//----====DVM Agent definition====------
+
+//--------------------------------------
+
 //-==Establish MongoBD connection==-
-// mongoose.connect('mongodb://192.168.1.4/PedestrianTestingDB');
-// var PedDB = mongoose.connection;
-// PedDB.on('error', console.error.bind(console, 'connection error:'));
-// // Define Schema
-// var mPointSchema = mongoose.Schema({
-//   deviceID: String,
-//   xPos: Number,
-//   yPos: Number,
-//   timeStamp: {type:Date, default: Date.now}
-// })
-// // Define Schema methods Ref: http://mongoosejs.com/docs/index.html
-// mPointSchema.methods.streamString = function(){
-//   var resp = "{" + this.deviceID + "," + this.xPos + "," + this.yPos +
-//                   this.timeStamp +"}";
-//   return resp;
-// }
-// // Define Model
-// var mPoint = mongoose.model('mPoint', mPointSchema);
+mongoose.connect('mongodb://192.168.1.4/PedestrianTestingDB');
+var PedDB = mongoose.connection;
+PedDB.on('error', console.error.bind(console, 'connection error:'));
+Define Schema
+var mPointSchema = mongoose.Schema({
+  deviceID: String,
+  xPos: Number,
+  yPos: Number,
+  timeStamp: {type:Date, default: Date.now}
+})
+// Define Schema methods Ref: http://mongoosejs.com/docs/index.html
+mPointSchema.methods.streamString = function(){
+  var resp = "{" + this.deviceID + "," + this.xPos + "," + this.yPos +
+                  this.timeStamp +"}";
+  return resp;
+}
+// Define Model
+var mPoint = mongoose.model('mPoint', mPointSchema);
 // //----------------------------------
 //
 // // Testing
