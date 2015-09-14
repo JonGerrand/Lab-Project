@@ -74,6 +74,37 @@ function DSMAgent(MongoModel){
 }// end DSMAgent constructor
 //--------------------------------------
 
+//----====SARM Aggregator definition====------
+// SARMAggregator Constructor
+function SARMAggregator(MongoModel){
+  this.loadAgent1 = new DSMAgent(MongoModel);
+  this.loadAgent2 = new DSMAgent(MongoModel);
+  this.toggleDirection = 0;
+  this.pushDataPoint = function(dataPoint){
+    if(this.toggleDirection === 0){
+      try{
+        this.loadAgent1.sourcePush(dataPoint);
+      } catch(e){
+        if(e instanceof DSMAgentException){
+          this.loadAgent1.sinkPull();
+          this.toggleDirection = 1;
+        }//if
+      }//catch
+    }//toggle === 0
+    if(this.toggleDirection === 1){
+      try{
+        this.loadAgent2.sourcePush(dataPoint);
+      } catch(e){
+        if(e instanceof DSMAgentException){
+          this.loadAgent2.sinkPull();
+          this.toggleDirection = 0;
+        }//if
+      }//catch
+    }//toggle === 1
+  };//pushDataPoint
+}//SARM Aggregator
+//--------------------------------------------
+
 //-==Establish MongoBD connection==-
 mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
@@ -93,24 +124,24 @@ mPointSchema.methods.streamString = function(){
 }
 // Define Model
 var mPoint = mongoose.model('mPoint', mPointSchema);
-// //----------------------------------
-//
-// // Testing
-// var point1 =  new mPoint({
-//                             deviceID:"12DDRW223",
-//                             xPos:4,
-//                             yPos:5});
-//
-// console.log(point1.streamString());
-//
-// point1.save(function(err){
-//   if(err) return console.error(err);
-// })
-//
-// mPoint.find(function(err,res){
-//   if (err) return console.error(err);
-//   console.log(res);
-// })
+//----------------------------------
+
+// Testing
+var point1 =  new mPoint({
+                            deviceID:"12DDRW223",
+                            xPos:4,
+                            yPos:5});
+
+console.log(point1.streamString());
+
+point1.save(function(err){
+  if(err) return console.error(err);
+})
+
+mPoint.find(function(err,res){
+  if (err) return console.error(err);
+  console.log(res);
+})
 
 //Initilise the SARM and Set "Waiting" configuration
 var TCPserver = net.createServer();
