@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.43.192';
+var tcp_HOST = '192.168.1.3';
 
 //Routing Config for express
 var routes = require('./routes/index');
