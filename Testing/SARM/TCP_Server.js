@@ -33,14 +33,52 @@ var convertMsToTimestamp = function(msString){
 //----------------------------------
 
 //----====DVM Agent definition====------
-
+// Exception Defenition
+function DSMAgentException(message){
+  this.message = message;
+  this.type = "DSMAgentException";
+}
+// DSM Agent Constructor
+function DSMAgent(MongoModel){
+  // Data members
+  this.channelThreshhold = 8000;
+  this.MongoModel = MongoModel;
+  this.agentChannel = [];
+  // Data functions
+  this.channelCapacity = function(){
+    return (this.channelThreshhold - this.agentChannel.length);
+  };
+  this.sourcePush = function(dataPoint){
+    if(this.channelCapacity > 0){
+      this.agentChannel.push()
+    } else{
+      throw new DSMAgentException('DSMAgent full');
+    }
+  };
+  this.sinkPull = function(){
+    // Callback function
+    function bulkInsertValidation(err,inseredtDataPoints){
+      if(err){
+        return next(err);
+      } else{
+        console.log(inseredtDataPoints.length + " Datapoints pushed to DB");
+        return true;
+      }
+    }
+    // Perform bulk insert. This is facillitated as an atomic opperation
+    pullRes = this.MongoModel.collection.insert(this.agentChannel,bulkInsertValidation);
+    if (pullRes === true){
+      this.agentChannel.length = 0;
+    }
+  };
+}// end DSMAgent constructor
 //--------------------------------------
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.4/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
-Define Schema
+// Define Schema
 var mPointSchema = mongoose.Schema({
   deviceID: String,
   xPos: Number,
