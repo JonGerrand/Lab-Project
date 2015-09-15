@@ -32,7 +32,7 @@ var convertMsToTimestamp = function(msString){
 };
 //----------------------------------
 
-//----====DVM Agent definition====------
+//----====DSM Agent definition====------
 // Exception Defenition
 function DSMAgentException(message){
   this.message = message;
@@ -78,8 +78,8 @@ function DSMAgent(MongoModel){
 //--------------------------------------
 
 //----====SARM Aggregator definition====------
-// SARMAggregator Constructor
-function SARMAggregator(MongoModel){
+// DSMAggregator Constructor
+function DSMAggregator(MongoModel){
   this.loadAgent1 = new DSMAgent(MongoModel);
   this.loadAgent2 = new DSMAgent(MongoModel);
   this.toggleDirection = 0;
@@ -130,7 +130,7 @@ mPointSchema.methods.streamString = function(){
 // Define Model
 var mPoint = mongoose.model('mPoint', mPointSchema);
 // Define SARM Aggregator
-var sarmAggregator = new SARMAggregator(mPoint);
+var dsmAggregator = new DSMAggregator(mPoint);
 //----------------------------------
 
 // Testing
@@ -153,19 +153,30 @@ TCPserver.on('connection', function(sock){
   //Socket formatting
   sock.setEncoding("ascii");
 
+  // Testing variable
+  var counter = 0;
   //-==I/O Handling==-
   sock.on('data', function(data){
-    console.log(data);
     // Output data to Sinks
     if(data != "SINK"){
+
       // Testing
-      // var Gateway = convertMsToTimestamp(data);
-      // var Sarm = getTimeStamp(0);
-      // console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
+      var splitString = data.split(",");
+      var Pi = convertMsToTimestamp(splitString[0]);
+      var Gateway = convertMsToTimestamp(splitString[1]);
+      var Sarm = getTimeStamp(0);
+      var pi_send = parseFloat(splitString[0])*1000;
+      var gateway_send = parseFloat(splitString[1])*1000;
+      var sarm_send = new Date();
+      var sarm_time = sarm_send.getTime();
+      counter = counter + 1;
+      // console.log("Pi: " + Pi + ",Gateway: " + Gateway + ",SARM: " + Sarm);
+
       for (var i = 0; i < sinkList.length; i++) {
-        // sinkList[i].write("Gateway:" + Gateway + ", SARM: " + Sarm);
-        sarmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
-        console.log("pushed Point: " + data);
+        sinkList[i].write(data);
+        console.log("Sent: " + counter);
+        dsmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
+        // console.log("pushed Point: " + data);
       }
     }
     // Agent type-definition

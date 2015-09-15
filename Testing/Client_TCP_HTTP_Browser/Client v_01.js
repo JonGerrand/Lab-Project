@@ -7,6 +7,12 @@ var net = require('net');
 var client = new net.Socket();
 client.setKeepAlive(true);
 var xData = 0;
+var sendArray = ""
+var length = 1;
+for (var i = 0; i < length; i++) {
+  sendArray = sendArray.concat(i.toString() + ",");
+}
+console.log(sendArray);
 
 client.connect(4040, '192.168.1.3', function(){
   console.log('Connected to remote Server');
@@ -15,10 +21,10 @@ client.connect(4040, '192.168.1.3', function(){
   // TODO There will have to be a throttling mechanism in place for the HTTP
   //  server for when the data rate received from the network is less than 190ms
   setInterval(function(){
-    console.log('Streaming Data');
+    console.log('Streaming Data: ' + xData);
     xData = xData +1;
-    client.write(xData.toString());
-  },100);
+    client.write(sendArray);
+  },30);
 
   // rl.prompt();
   // rl.on('line', function(line){
