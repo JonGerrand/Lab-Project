@@ -44,7 +44,16 @@ var convertMsToTimestamp = function(msString){
 };
 //----------------------------------
 
-
+// Testing variables
+var pi_old = 0;
+var gateway_old = 0;
+var sarm_old = 0;
+var dvm_old = 0;
+var pi_new = 0;
+var gateway_new = 0;
+var sarm_new = 0;
+var dvm_new = 0;
+var dataCount = 0;
 
 //----------Socket.io-------------------
 var webSock = socket_io();
@@ -53,12 +62,10 @@ app.io = webSock;
 //Websocket connection handling
 webSock.sockets.on("connection", function(socket){
   console.log("A socket connected!");
-
   // TCP Client creattion
   var tcpClient = new tcpSock.Socket();
   tcpClient.setEncoding("ascii");
   tcpClient.setKeepAlive(true);
-
   // TCP connection
   tcpClient.connect(tcp_PORT, tcp_HOST, function(){
     tcpClient.write("SINK");
@@ -67,11 +74,32 @@ webSock.sockets.on("connection", function(socket){
     socket.emit("httpServer_msg", "Connected to HTTP Server");
     // Emit data to Websockets
     tcpClient.on('data', function(data){
-      console.log("HTTP Received: " + data);
-      var HTTPServer = getTimeStamp(0);
-      socket.emit("httpServer_ord", data + ", DVM: " + HTTPServer);
+      console.log("Received Data");
+      // Delta calculations
+      var timeStamps = data.split(",")
+      // pi_old = pi_new;
+      // gateway_old = gateway_new;
+      // sarm_old = sarm_new;
+      dataCount = dataCount + 1;
+      // dvm_old = dvm_new;
+      // dvm_new = new Date();
+      // pi_new = new Date(parseFloat(timeStamps[1]));
+      // gateway_new = new Date(parseFloat(timeStamps[2]));
+      // sarm_new = new Date(parseFloat(timeStamps[3]));
+      // var delta_pi = pi_new - pi_old;
+      // var delta_gateway = gateway_new - gateway_old;
+      // var delta_sarm = sarm_new - sarm_old;
+      var delta_dvm = dvm_new - dvm_old;
+      // console.log("Pi: " + delta_pi + " Gate: " + delta_gateway + " SARM: " + delta_sarm + " DVM: " + delta_dvm);
+      console.log("count" + dataCount);
+      console.log("DVM: " + delta_dvm);
+      for (var i = 0; i < timeStamps.length; i++) {
+        console.log(timeStamps[i]);
+      }
+      // console.log("DVM: " + delta_dvm);
+       socket.emit("httpServer_ord", data + ", DVM: " + delta_dvm);
       // socket.emit("httpServer_alert", data);
-      socket.emit("httpServer_msg", "1")
+       socket.emit("httpServer_msg",  data + ", DVM: " + delta_dvm)
       });
     // Web socket closed
     socket.on('disconnect',function(){
