@@ -41,7 +41,7 @@ function DSMAgentException(message){
 // DSM Agent Constructor
 function DSMAgent(MongoModel){
   // Data members
-  this.channelThreshhold = 8000;
+  this.channelThreshhold = 40;
   this.MongoModel = MongoModel;
   this.agentChannel = [];
   // Data functions
@@ -49,8 +49,8 @@ function DSMAgent(MongoModel){
     return (this.channelThreshhold - this.agentChannel.length);
   };
   this.sourcePush = function(dataPoint){
-    if(this.channelCapacity > 0){
-      this.agentChannel.push()
+    if(this.channelCapacity() > 0){
+      this.agentChannel.push(dataPoint)
     } else{
       throw new DSMAgentException('DSMAgent full');
     }
@@ -61,14 +61,17 @@ function DSMAgent(MongoModel){
       if(err){
         return next(err);
       } else{
-        console.log(inseredtDataPoints.length + " Datapoints pushed to DB");
+        console.log("Datapoints pushed to DB");
         return true;
       }
     }
     // Perform bulk insert. This is facillitated as an atomic opperation
-    pullRes = this.MongoModel.collection.insert(this.agentChannel,bulkInsertValidation);
-    if (pullRes === true){
-      this.agentChannel.length = 0;
+    try{
+      this.MongoModel.collection.insert(this.agentChannel,bulkInsertValidation);
+    } catch(e){
+      console.error(e);
+    } finally{
+          this.agentChannel.length = 0;
     }
   };
 }// end DSMAgent constructor
@@ -86,6 +89,7 @@ function SARMAggregator(MongoModel){
         this.loadAgent1.sourcePush(dataPoint);
       } catch(e){
         if(e instanceof DSMAgentException){
+          console.log("Start sink pull");
           this.loadAgent1.sinkPull();
           this.toggleDirection = 1;
         }//if
@@ -96,6 +100,7 @@ function SARMAggregator(MongoModel){
         this.loadAgent2.sourcePush(dataPoint);
       } catch(e){
         if(e instanceof DSMAgentException){
+          console.log("Start sink pull");
           this.loadAgent2.sinkPull();
           this.toggleDirection = 0;
         }//if
@@ -124,24 +129,15 @@ mPointSchema.methods.streamString = function(){
 }
 // Define Model
 var mPoint = mongoose.model('mPoint', mPointSchema);
+// Define SARM Aggregator
+var sarmAggregator = new SARMAggregator(mPoint);
 //----------------------------------
 
 // Testing
 var point1 =  new mPoint({
-                            deviceID:"12DDRW223",
-                            xPos:4,
-                            yPos:5});
-
-console.log(point1.streamString());
-
-point1.save(function(err){
-  if(err) return console.error(err);
-})
-
-mPoint.find(function(err,res){
-  if (err) return console.error(err);
-  console.log(res);
-})
+                          deviceID:"12DDRW223",
+                          xPos:4,
+                          yPos:5});
 
 //Initilise the SARM and Set "Waiting" configuration
 var TCPserver = net.createServer();
@@ -162,11 +158,13 @@ TCPserver.on('connection', function(sock){
     // Output data to Sinks
     if(data != "SINK"){
       // Testing
-      var Gateway = convertMsToTimestamp(data);
-      var Sarm = getTimeStamp(0);
-      console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
+      // var Gateway = convertMsToTimestamp(data);
+      // var Sarm = getTimeStamp(0);
+      // console.log("Gateway:" + Gateway + ",SARM: " + Sarm);
       for (var i = 0; i < sinkList.length; i++) {
-        sinkList[i].write("Gateway:" + Gateway + ", SARM: " + Sarm);
+        // sinkList[i].write("Gateway:" + Gateway + ", SARM: " + Sarm);
+        sarmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
+        console.log("pushed Point: " + data);
       }
     }
     // Agent type-definition

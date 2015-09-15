@@ -18,7 +18,7 @@ client.connect(4040, '192.168.1.3', function(){
     console.log('Streaming Data');
     xData = xData +1;
     client.write(xData.toString());
-  },200);
+  },100);
 
   // rl.prompt();
   // rl.on('line', function(line){
