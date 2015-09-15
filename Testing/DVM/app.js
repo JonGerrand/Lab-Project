@@ -70,7 +70,7 @@ webSock.sockets.on("connection", function(socket){
       console.log("HTTP Received: " + data);
       var HTTPServer = getTimeStamp(0);
       socket.emit("httpServer_ord", data + ", DVM: " + HTTPServer);
-      socket.emit("httpServer_alert", data);
+      // socket.emit("httpServer_alert", data);
       socket.emit("httpServer_msg", "1")
       });
     // Web socket closed

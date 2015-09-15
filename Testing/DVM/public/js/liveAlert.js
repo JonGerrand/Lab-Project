@@ -41,10 +41,18 @@ var setPanelAlert = function(toggle){
   }
 };
 
+// Referenced from:
+// http://stackoverflow.com/questions/18739888/playing-a-sound-in-a-browser-chrome-from-javascript
+function playSound ( soundname ){
+    var thissound = document.getElementById( soundname );
+    thissound.play();
+  }
+
 // Function implementation
 Websocket.on('httpServer_alert', function(msg){
   console.log("Alert");
   generateNotificationAlert('Success',msg);
   setPanelAlert("on");
   setTimeout(function(){setPanelAlert("off")},2000);
+  playSound("AlertTone");
 });

@@ -234,6 +234,9 @@
     </div>
     <!-- /#wrapper -->
 
+    <!-- On page content -->
+    <audio src="audio/siren.wav" id="AlertTone" autostart="false"></audio>
+
     <!--  ****SCRIPTS***  -->
 
     <!-- jQuery -->
