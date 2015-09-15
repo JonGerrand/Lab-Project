@@ -134,10 +134,10 @@ var sarmAggregator = new SARMAggregator(mPoint);
 //----------------------------------
 
 // Testing
-var point1 =  new mPoint({
-                          deviceID:"12DDRW223",
-                          xPos:4,
-                          yPos:5});
+// var point1 =  new mPoint({
+//                           deviceID:"12DDRW223",
+//                           xPos:4,
+//                           yPos:5});
 
 //Initilise the SARM and Set "Waiting" configuration
 var TCPserver = net.createServer();
@@ -155,6 +155,7 @@ TCPserver.on('connection', function(sock){
 
   //-==I/O Handling==-
   sock.on('data', function(data){
+    console.log(data);
     // Output data to Sinks
     if(data != "SINK"){
       // Testing
