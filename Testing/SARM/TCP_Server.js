@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.43.192';
+var HOST = '192.168.1.3';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -111,7 +111,7 @@ function DSMAggregator(MongoModel){
 //--------------------------------------------
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -160,18 +160,10 @@ TCPserver.on('connection', function(sock){
   sock.on('data', function(data){
     // Output data to Sinks
     if(data != "SINK"){
-
-      // Testing
+      // Stream handling
       var splitString = data.split(",");
-      var Pi = convertMsToTimestamp(splitString[0]);
-      var Gateway = convertMsToTimestamp(splitString[1]);
-      var Sarm = getTimeStamp(0);
-      var pi_send = parseFloat(splitString[0])*1000;
-      var gateway_send = parseFloat(splitString[1])*1000;
-      var sarm_send = new Date();
-      var sarm_time = sarm_send.getTime();
       counter = counter + 1;
-      console.log("Pi: " + Pi + ",Gateway: " + Gateway + ",SARM: " + Sarm);
+      console.log("Received data: " + );
       for (var i = 0; i < sinkList.length; i++) {
         sinkList[i].write(data);
         dsmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
