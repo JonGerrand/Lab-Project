@@ -26,7 +26,7 @@ var routes = require('./routes/index');
 //Bind express object to App object
 var app = express();
 
-//----====Helper Functions====------
+//----====Helper Functions====------------------
 var getTimeStamp = function(dateInfo){
   if(dateInfo === 0){
     var d = new Date();
@@ -42,11 +42,53 @@ var convertMsToTimestamp = function(msString){
   recvTime = recvTime*1000;
   return getTimeStamp(recvTime);
 };
-//----------------------------------
+
+var getType = function(element){
+  return ({}).toString.call(element).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+};
+//----------------------------------------------
+
+//------------====StreamExtractor====------------
+var StreamDataUnpacker = function(){
+  this.xPos = 0;
+  this.yPos = 0;
+  this.deviceID = "";
+  this.timeStamp = "";
+  this.unpackData = function(dataPoint){
+    var unpackedString = dataPoint.split(",");
+    if(getType(unpackedString[0]) === 'string'){
+      this.deviceID = unpackedString[0];
+    }
+    if(getType(unpackedString[1]) === 'string'){
+      this.xPos = unpackedString[1];
+    }
+    if(getType(unpackedString[2]) === 'string'){
+      this.yPos = unpackedString[2];
+    }
+    if(getType(unpackedString[3]) === 'string'){
+      this.timeStamp = unpackedString[3];
+    }
+  }
+  this.getXPos = function(){
+    return this.xPos;
+  }
+  this.getYPos = function(){
+    return this.yPos;
+  }
+  this.getDeviceID = function(){
+    return this.deviceID;
+  }
+  this.getTimeStamp = function(){
+    return this.timeStamp;
+  }
+}
+var DVMDataUnpacker = new StreamDataUnpacker();
+//-------------------------------------------------------
 
 //----------Socket.io-------------------
 var webSock = socket_io();
 app.io = webSock;
+//--------------------------------------
 
 //Websocket connection handling
 webSock.sockets.on("connection", function(socket){
@@ -65,9 +107,12 @@ webSock.sockets.on("connection", function(socket){
     // Emit data to Websockets
     tcpClient.on('data', function(data){
       console.log("Received Data: " + data);
-      //socket.emit("httpServer_ord", data + ", DVM: " + delta_dvm);
-      // socket.emit("httpServer_alert", data);
-      socket.emit("httpServer_msg",data);
+      if(data.search("SARM") === -1){
+          DVMDataUnpacker.unpackData(data);
+          socket.emit("httpServer_ord", DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+          //socket.emit("httpServer_alert", data);
+          // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+        }
       });
     // Web socket closed
     socket.on('disconnect',function(){
