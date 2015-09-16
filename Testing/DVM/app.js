@@ -67,7 +67,7 @@ webSock.sockets.on("connection", function(socket){
       console.log("Received Data: " + data);
       //socket.emit("httpServer_ord", data + ", DVM: " + delta_dvm);
       // socket.emit("httpServer_alert", data);
-      socket.emit("httpServer_msg", "\n" + "Pi: " + delta_pi);
+      socket.emit("httpServer_msg",data);
       });
     // Web socket closed
     socket.on('disconnect',function(){
