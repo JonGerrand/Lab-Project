@@ -163,7 +163,7 @@ TCPserver.on('connection', function(sock){
       // Stream handling
       var splitString = data.split(",");
       counter = counter + 1;
-      console.log("Received data: " + );
+      console.log("Received data: " + data);
       for (var i = 0; i < sinkList.length; i++) {
         sinkList[i].write(data);
         dsmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
