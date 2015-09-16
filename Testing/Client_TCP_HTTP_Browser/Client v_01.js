@@ -7,24 +7,21 @@ var net = require('net');
 var client = new net.Socket();
 client.setKeepAlive(true);
 var xData = 0;
-var sendArray = ""
-var length = 1;
-for (var i = 0; i < length; i++) {
-  sendArray = sendArray.concat(i.toString() + ",");
+var genRandomNum = function(min,max){
+  return Math.floor(Math.random() * max) + min;
 }
+
+var sendArray = "TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
 console.log(sendArray);
 
-client.connect(4040, '192.168.43.192', function(){
+client.connect(4040, '192.168.1.3', function(){
   console.log('Connected to remote Server');
-  client.write('This is a message');
 
-  // TODO There will have to be a throttling mechanism in place for the HTTP
-  //  server for when the data rate received from the network is less than 190ms
   setInterval(function(){
     console.log('Streaming Data: ' + xData);
     xData = xData +1;
-    client.write(sendArray);
-  },5);
+    client.write("TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545");
+  },30);
 
   // rl.prompt();
   // rl.on('line', function(line){

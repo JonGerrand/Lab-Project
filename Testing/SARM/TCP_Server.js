@@ -30,6 +30,10 @@ var convertMsToTimestamp = function(msString){
   recvTime = recvTime*1000;
   return getTimeStamp(recvTime);
 };
+
+var getType = function(element){
+  return ({}).toString.call(element).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+};
 //----------------------------------
 
 //----====DSM Agent definition====------
@@ -37,7 +41,7 @@ var convertMsToTimestamp = function(msString){
 function DSMAgentException(message){
   this.message = message;
   this.type = "DSMAgentException";
-}
+};
 // DSM Agent Constructor
 function DSMAgent(MongoModel){
   // Data members
@@ -74,7 +78,7 @@ function DSMAgent(MongoModel){
           this.agentChannel.length = 0;
     }
   };
-}// end DSMAgent constructor
+};// end DSMAgent constructor
 //--------------------------------------
 
 //----====SARM Aggregator definition====------
@@ -89,9 +93,9 @@ function DSMAggregator(MongoModel){
         this.loadAgent1.sourcePush(dataPoint);
       } catch(e){
         if(e instanceof DSMAgentException){
+          this.toggleDirection = 1;
           console.log("Start sink pull");
           this.loadAgent1.sinkPull();
-          this.toggleDirection = 1;
         }//if
       }//catch
     }//toggle === 0
@@ -100,15 +104,57 @@ function DSMAggregator(MongoModel){
         this.loadAgent2.sourcePush(dataPoint);
       } catch(e){
         if(e instanceof DSMAgentException){
+          this.toggleDirection = 0;
           console.log("Start sink pull");
           this.loadAgent2.sinkPull();
-          this.toggleDirection = 0;
         }//if
       }//catch
     }//toggle === 1
   };//pushDataPoint
 }//SARM Aggregator
 //--------------------------------------------
+
+//----====SARM Data Handler====------
+function DataUnpackerException(message){
+  this.message = message;
+  this.type = "DataUnpackerException";
+};
+// DataUnpacker Constructor
+function DataUnpacker(){
+  this.timeStamp = 0;
+  this.xPos = 0;
+  this.yPos = 0;
+  this.deviceID = 0;
+  this.unpackData = function(dataPoint){
+    var separatedData = dataPoint.split(",");
+    // Data assignment
+    this.deviceID = separatedData[0];
+    if(getType(this.deviceID) != 'string'){
+      throw new DataUnpackerException('Invalid Device ID');
+    }
+    this.xPos = Math.round(parseFloat(separatedData[1]));
+    if((getType(this.xPos) != 'number') || (this.xPos < 0)){
+      throw new DataUnpackerException('Invalid x-Coordinate');
+    }
+    this.yPos = Math.round(parseFloat(separatedData[2]));
+    if((getType(this.yPos) != 'number') || (this.yPos < 0)){
+      throw new DataUnpackerException('Invalid y-Coordinate');
+    }
+    this.timeStamp = convertMsToTimestamp(separatedData[3]);
+    if(getType(this.timeStamp) != 'string'){
+      throw new DataUnpackerException('Invalid TimeStamp');
+    }
+  };
+  this.outputDVMData = function(){
+    return this.deviceID + "," + this.xPos + "," + this.yPos + "," + this.timeStamp;
+  }
+  this.outputDSMData = function(){
+    return {"DeviceID":this.deviceID,"xPos":this.xPos, "yPos":this.yPos,
+            "TimeStamp":this.timeStamp};
+  }
+}
+//-----------------------------------
+
 
 //-==Establish MongoBD connection==-
 mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
@@ -122,11 +168,11 @@ var mPointSchema = mongoose.Schema({
   timeStamp: {type:Date, default: Date.now}
 })
 // Define Schema methods Ref: http://mongoosejs.com/docs/index.html
-mPointSchema.methods.streamString = function(){
-  var resp = "{" + this.deviceID + "," + this.xPos + "," + this.yPos +
-                  this.timeStamp +"}";
-  return resp;
-}
+// mPointSchema.methods.streamString = function(){
+//   var resp = "{" + this.deviceID + "," + this.xPos + "," + this.yPos +
+//                   this.timeStamp +"}";
+//   return resp;
+// }
 // Define Model
 var mPoint = mongoose.model('mPoint', mPointSchema);
 // Define SARM Aggregator
@@ -153,20 +199,23 @@ TCPserver.on('connection', function(sock){
   //Socket formatting
   sock.setEncoding("ascii");
   sock.setNoDelay(true);
+  //Initilise stream unpacker
+  var streamUnpacker = new DataUnpacker();
 
-  // Testing variable
-  var counter = 0;
   //-==I/O Handling==-
   sock.on('data', function(data){
     // Output data to Sinks
     if(data != "SINK"){
       // Stream handling
-      var splitString = data.split(",");
-      counter = counter + 1;
-      console.log("Received data: " + data);
+      try{
+        streamUnpacker.unpackData(data);
+      }catch(e){
+        console.log(e.message);
+      }
       for (var i = 0; i < sinkList.length; i++) {
-        sinkList[i].write(data);
-        dsmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
+        sinkList[i].write(streamUnpacker.outputDVMData());
+        dsmAggregator.pushDataPoint(streamUnpacker.outputDSMData());
+        console.log(streamUnpacker.outputDSMData());
       }
     }
     // Agent type-definition
