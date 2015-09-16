@@ -14,7 +14,7 @@ for (var i = 0; i < length; i++) {
 }
 console.log(sendArray);
 
-client.connect(4040, '192.168.1.3', function(){
+client.connect(4040, '192.168.43.192', function(){
   console.log('Connected to remote Server');
   client.write('This is a message');
 
@@ -24,7 +24,7 @@ client.connect(4040, '192.168.1.3', function(){
     console.log('Streaming Data: ' + xData);
     xData = xData +1;
     client.write(sendArray);
-  },30);
+  },5);
 
   // rl.prompt();
   // rl.on('line', function(line){

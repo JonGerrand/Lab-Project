@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.3';
+var HOST = '192.168.43.192';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -111,7 +111,7 @@ function DSMAggregator(MongoModel){
 //--------------------------------------------
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -152,6 +152,7 @@ TCPserver.on('connection', function(sock){
   console.log("Connected " + sock.remoteAddress);
   //Socket formatting
   sock.setEncoding("ascii");
+  sock.setNoDelay(true);
 
   // Testing variable
   var counter = 0;
@@ -170,13 +171,10 @@ TCPserver.on('connection', function(sock){
       var sarm_send = new Date();
       var sarm_time = sarm_send.getTime();
       counter = counter + 1;
-      // console.log("Pi: " + Pi + ",Gateway: " + Gateway + ",SARM: " + Sarm);
-
+      console.log("Pi: " + Pi + ",Gateway: " + Gateway + ",SARM: " + Sarm);
       for (var i = 0; i < sinkList.length; i++) {
         sinkList[i].write(data);
-        console.log("Sent: " + counter);
         dsmAggregator.pushDataPoint({"name": "Sally", "Gender":"Female"});
-        // console.log("pushed Point: " + data);
       }
     }
     // Agent type-definition
