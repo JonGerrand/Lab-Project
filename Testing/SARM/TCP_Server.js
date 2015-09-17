@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.3';
+var HOST = '192.168.1.2';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -157,15 +157,15 @@ function DataUnpacker(){
 
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.2/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
 var mPointSchema = mongoose.Schema({
-  deviceID: String,
+  DeviceID: String,
   xPos: Number,
   yPos: Number,
-  timeStamp: {type:Date, default: Date.now}
+  TimeStamp: {type:Date, default: Date.now}
 })
 // Define Schema methods Ref: http://mongoosejs.com/docs/index.html
 // mPointSchema.methods.streamString = function(){
@@ -178,12 +178,6 @@ var mPoint = mongoose.model('mPoint', mPointSchema);
 // Define SARM Aggregator
 var dsmAggregator = new DSMAggregator(mPoint);
 //----------------------------------
-
-// Testing
-// var point1 =  new mPoint({
-//                           deviceID:"12DDRW223",
-//                           xPos:4,
-//                           yPos:5});
 
 //Initilise the SARM and Set "Waiting" configuration
 var TCPserver = net.createServer();
