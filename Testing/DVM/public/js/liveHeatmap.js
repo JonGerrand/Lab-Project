@@ -1,4 +1,3 @@
-// window.onload = function() {
 
   var Websocket = io();
   Websocket.on('httpServer_msg', function(msg){
@@ -40,4 +39,3 @@
     var y = e.layerY;
     heatmap.addData({ x: x, y: y, value: 1 });
   };
-// };

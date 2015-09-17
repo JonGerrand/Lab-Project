@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.3';
+var tcp_HOST = '192.168.1.2';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -83,7 +83,42 @@ var StreamDataUnpacker = function(){
   }
 }
 var DVMDataUnpacker = new StreamDataUnpacker();
-//-------------------------------------------------------
+//-----------------------------------------------
+
+//------------====HistoricalQueries====------------
+var MovementRecord = function(model){
+  this.model = model;
+  this.getDateRange = function(min,max){
+    var queryObject = {};
+    queryObject.map = function(){ emit(this.TimeStamp,this.DeviceID)};
+    queryObject.reduce = function(key,vals){
+      if(key < 5){return vals[1]};
+    };
+    this.model.mapReduce(queryObject,function(err,results){
+      if(err) return console.error(err);
+      console.log(results);
+    });
+  };//getDateRange
+}//MovementRecord
+//-------------------------------------------------
+
+//------------====Mongoose Setup====------------
+//-==Establish MongoBD connection==-
+mongoose.connect('mongodb://192.168.1.2/PedestrianTestingDB');
+var PedDB = mongoose.connection;
+PedDB.on('error', console.error.bind(console, 'connection error:'));
+// Define Schema
+var mPointSchema = new mongoose.Schema({
+  DeviceID: String,
+  xPos: Number,
+  yPos: Number,
+  TimeStamp: String
+});
+// Define model
+var mPoint = mongoose.model('mPoint', mPointSchema);
+// Create MovementRecord
+var movementHistory = new MovementRecord(mPoint);
+//----------------------------------------------
 
 //----------Socket.io-------------------
 var webSock = socket_io();
@@ -119,10 +154,17 @@ webSock.sockets.on("connection", function(socket){
       clearInterval();
       tcpClient.destroy();
       });
-    });
-  });
+    // Data handling from browser
+    socket.on('histHeatmap_query',function(data){
+        movementHistory.getDateRange(4,5);
+      }); //Websocket received data
+    }); //tcpClient connection
+  }); //Websocket connection
 
-
+  // console.log(data);
+  // mPoint.find({xPos:158},function(err,mpoints){
+  //     if(err) return console.error(err);
+  //     console.log(mpoints);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
