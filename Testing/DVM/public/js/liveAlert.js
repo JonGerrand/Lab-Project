@@ -34,7 +34,7 @@ var generateNotificationAlert = function(type, msg){
 
 var setPanelAlert = function(toggle){
   if(toggle === "on"){
-    $('#liveHeatmapPanel').attr('class','panel panel-danger');
+    $('#liveHeatmapPanel').attr('class','panel panel-red');
   }
   if(toggle === "off"){
     $('#liveHeatmapPanel').attr('class','panel panel-info');
