@@ -2,7 +2,7 @@
 var Websocket = io();
 
 $('#TrialButton').click(function(){
-  Websocket.emit('histHeatmap_query',"(-_(-_-)_-)");
+  Websocket.emit('histHeatmap_query',{min: new Date('09/15/2015'), max: new Date('09/17/2015')});
 });
 
 // Historical data retrieval
@@ -23,8 +23,12 @@ Websocket.on('httpServer_ord', function(ord){
   heatmap.addData({ x: parseInt(heatCoords[0]), y: parseInt(heatCoords[1]) , value: 1 });
 });
 
+Websocket.on('httpServer_histOrd',function(histOrds){
+  console.log(histOrds);
+});
+
 heatmapContainer.onclick = function(e) {
-  var x = e.layerX;
-  var y = e.layerY;
-  heatmap.addData({ x: x, y: y, value: 1 });
+  // var x = e.layerX;
+  // var y = e.layerY;
+  // heatmap.addData({ x: x, y: y, value: 1 });
 };
