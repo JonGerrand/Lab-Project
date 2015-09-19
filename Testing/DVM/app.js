@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.3';
+var tcp_HOST = '192.168.1.11';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -88,10 +88,8 @@ var DVMDataUnpacker = new StreamDataUnpacker();
 //------------====HistoricalQueries====------------
 var MovementRecord = function(model){
   this.model = model;
-  this.results = [];
-  this.getDateRange = function(min,max){
+  this.getDateRange = function(min,max,socket){
     var queryObject = {};
-    var bob = [];
     queryObject.map = function(){
       emit(this.TimeStamp,{id:this.DeviceID,x:this.xPos, y:this.yPos});
     };
@@ -100,18 +98,19 @@ var MovementRecord = function(model){
     };
     queryObject.query = {TimeStamp:{$gt: min, $lt: max}};
     queryObject.verbose = true;
-    queryObject.out = {replace:'mPointMRresults'};
+    queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
       console.log(stats);
-    });
-  };//getDateRange
-}//MovementRecord
+      socket.emit('httpServer_histOrd',results);
+    }); //mapReduce
+  }; //getDateRange
+} //MovementRecord
 //-------------------------------------------------
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -169,11 +168,7 @@ webSock.sockets.on("connection", function(socket){
       });
     // Data handling from browser
     socket.on('histHeatmap_query',function(data){
-        movementHistory.getDateRange(data.min,data.max);
-        mPointMapRed.find({},function(err,results){
-          socket.emit("httpServer_histOrd", results);
-          console.log(results);
-        });
+      movementHistory.getDateRange(data.min,data.max,socket);
       }); //Websocket received data
     }); //tcpClient connection
   }); //Websocket connection
