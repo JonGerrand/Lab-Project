@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.2';
+var tcp_HOST = '192.168.1.11';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -88,23 +88,29 @@ var DVMDataUnpacker = new StreamDataUnpacker();
 //------------====HistoricalQueries====------------
 var MovementRecord = function(model){
   this.model = model;
-  this.getDateRange = function(min,max){
+  this.getDateRange = function(min,max,socket){
     var queryObject = {};
-    queryObject.map = function(){ emit(this.TimeStamp,this.DeviceID)};
-    queryObject.reduce = function(key,vals){
-      if(key < 5){return vals[1]};
+    queryObject.map = function(){
+      emit(this.TimeStamp,{id:this.DeviceID,x:this.xPos, y:this.yPos});
     };
-    this.model.mapReduce(queryObject,function(err,results){
+    queryObject.reduce = function(key,vals){
+      return vals[0];
+    };
+    queryObject.query = {TimeStamp:{$gt: min, $lt: max}};
+    queryObject.verbose = true;
+    queryObject.out = {inline:1};
+    this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      console.log(results);
-    });
-  };//getDateRange
-}//MovementRecord
+      console.log(stats);
+      socket.emit('httpServer_histOrd',results);
+    }); //mapReduce
+  }; //getDateRange
+} //MovementRecord
 //-------------------------------------------------
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.2/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -112,10 +118,16 @@ var mPointSchema = new mongoose.Schema({
   DeviceID: String,
   xPos: Number,
   yPos: Number,
-  TimeStamp: String
+  TimeStamp: Date
 });
-// Define model
+
+var historicalMPointSchema = new mongoose.Schema({
+  _id: Date,
+  value: {id:String, x:Number, y:Number}
+});
+// Define models
 var mPoint = mongoose.model('mPoint', mPointSchema);
+var mPointMapRed = mongoose.model('mPointMRresult',historicalMPointSchema);
 // Create MovementRecord
 var movementHistory = new MovementRecord(mPoint);
 //----------------------------------------------
@@ -156,7 +168,7 @@ webSock.sockets.on("connection", function(socket){
       });
     // Data handling from browser
     socket.on('histHeatmap_query',function(data){
-        movementHistory.getDateRange(4,5);
+      movementHistory.getDateRange(data.min,data.max,socket);
       }); //Websocket received data
     }); //tcpClient connection
   }); //Websocket connection
@@ -165,6 +177,7 @@ webSock.sockets.on("connection", function(socket){
   // mPoint.find({xPos:158},function(err,mpoints){
   //     if(err) return console.error(err);
   //     console.log(mpoints);
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
