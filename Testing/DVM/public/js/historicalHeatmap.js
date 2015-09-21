@@ -2,7 +2,8 @@
 var Websocket = io();
 
 $('#TrialButton').click(function(){
-  Websocket.emit('histHeatmap_query',{min: new Date('09/15/2015'), max: new Date('09/17/2015')});
+  Websocket.emit('histHeatmap_query',{min: new Date('09/15/2015'), max: new Date('09/19/2015')});
+  // Websocket.emit('histHeatmap_query',{min: 0, max: 500});
 });
 
 // Historical data retrieval
@@ -23,8 +24,16 @@ Websocket.on('httpServer_ord', function(ord){
   heatmap.addData({ x: parseInt(heatCoords[0]), y: parseInt(heatCoords[1]) , value: 1 });
 });
 
+// Receive historic data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
-  console.log(histOrds);
+  var histPoints = [];
+  for (var i = 0; i < histOrds.length; i++) {
+    // heatmap.addData({x:histOrds[i].value.x, y:histOrds[i].value.y, value:1});
+    var point = {x:histOrds[i].value.x, y:histOrds[i].value.y, value:1};
+    histPoints.push(point);
+  }
+  data = {max:1,data:histPoints};
+  heatmap.setData(data);
 });
 
 heatmapContainer.onclick = function(e) {
