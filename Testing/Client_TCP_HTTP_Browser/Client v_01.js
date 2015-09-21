@@ -14,13 +14,14 @@ var genRandomNum = function(min,max){
 var sendArray = "TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
 console.log(sendArray);
 
-client.connect(4040, '192.168.1.2', function(){
+client.connect(4040, '192.168.1.3', function(){
   console.log('Connected to remote Server');
 
   setInterval(function(){
     console.log('Streaming Data: ' + xData);
     xData = xData +1;
-    client.write("TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545");
+    client.write("TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + "," +
+                (1442404311.781545+xData).toString());
   },30);
 
   // rl.prompt();

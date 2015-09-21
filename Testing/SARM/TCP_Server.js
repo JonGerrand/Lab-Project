@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.2';
+var HOST = '192.168.1.3';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -21,8 +21,7 @@ var getTimeStamp = function(dateInfo){
   } else{
      var d = new Date(dateInfo);
   }
-  return d.getYear() + ":" + d.getMonth() + ":" + d.getDate() + ":" + d.getHours() +
-          ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
+  return d;
 };
 
 var convertMsToTimestamp = function(msString){
@@ -45,7 +44,7 @@ function DSMAgentException(message){
 // DSM Agent Constructor
 function DSMAgent(MongoModel){
   // Data members
-  this.channelThreshhold = 40;
+  this.channelThreshhold = 10*100;
   this.MongoModel = MongoModel;
   this.agentChannel = [];
   // Data functions
@@ -141,7 +140,7 @@ function DataUnpacker(){
       throw new DataUnpackerException('Invalid y-Coordinate');
     }
     this.timeStamp = convertMsToTimestamp(separatedData[3]);
-    if(getType(this.timeStamp) != 'string'){
+    if(getType(this.timeStamp) != 'date'){
       throw new DataUnpackerException('Invalid TimeStamp');
     }
   };
@@ -157,11 +156,11 @@ function DataUnpacker(){
 
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.2/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
-var mPointSchema = mongoose.Schema({
+var mPointSchema = new mongoose.Schema({
   DeviceID: String,
   xPos: Number,
   yPos: Number,
