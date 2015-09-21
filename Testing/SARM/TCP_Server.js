@@ -44,7 +44,7 @@ function DSMAgentException(message){
 // DSM Agent Constructor
 function DSMAgent(MongoModel){
   // Data members
-  this.channelThreshhold = 10*100;
+  this.channelThreshhold = 10*100; //Increase during testing
   this.MongoModel = MongoModel;
   this.agentChannel = [];
   // Data functions
@@ -217,7 +217,7 @@ TCPserver.on('connection', function(sock){
       // Verify new connection
       for (var i = 0; i < sinkList.length; i++) {
         if(sinkList[i].remoteAddress === sock.remoteAddress){
-          replicated = 1;
+          // replicated = 1;
         }
       }
       if(replicated != 1){
