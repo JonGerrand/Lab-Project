@@ -39,6 +39,18 @@ body {
   background-size: 100% 100%;
 }
 
+.HeatTooltip{
+  position:absolute;
+  left:0;
+  top:0;
+  background:rgba(143, 49, 49, 0.8);
+  color:white;
+  font-size:14px;
+  padding:5px;
+  line-height:18px;
+  display:none;
+}
+
 .huge {
     font-size: 50px;
     line-height: normal;

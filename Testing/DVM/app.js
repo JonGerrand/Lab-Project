@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.11';
+var tcp_HOST = '192.168.1.3';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -101,16 +101,34 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
+      console.log(results);
       console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
+  this.getPosition = function(xPosMin,xPosMax,yPosMin,yPosMax,socket){
+    var queryObject = {};
+    queryObject.map = function(){
+      emit(this.DeviceID, this.xPos);
+    };
+    queryObject.reduce = function(key,vals){
+      return vals[0];
+    };
+    queryObject.query = {xPos:{$gt: xPosMin, $lt: xPosMax}};
+    queryObject.verbose = true;
+    this.model.mapReduce(queryObject,function(err,results,stats){
+      if(err) return console.error(err);
+      console.log(results);
+      console.log(stats);
+      socket.emit('httpServer_histOrd',results);
+    }); //mapReduce
+  } //getPosition
 } //MovementRecord
 //-------------------------------------------------
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -169,15 +187,10 @@ webSock.sockets.on("connection", function(socket){
     // Data handling from browser
     socket.on('histHeatmap_query',function(data){
       movementHistory.getDateRange(data.min,data.max,socket);
+      // movementHistory.getPosition(data.min,data.max,data.min,data.max,socket);
       }); //Websocket received data
     }); //tcpClient connection
   }); //Websocket connection
-
-  // console.log(data);
-  // mPoint.find({xPos:158},function(err,mpoints){
-  //     if(err) return console.error(err);
-  //     console.log(mpoints);
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

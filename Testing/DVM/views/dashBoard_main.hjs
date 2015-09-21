@@ -153,7 +153,10 @@
                                 <h3 class="panel-title"><i class="fa fa-dashboard fa-fw"></i> Surveilance area</h3>
                             </div>
                             <div class="panel-body">
-                                <div id="heatmapContainerWrapper"><div id="heatmapContainer"></div></div>
+                                <div id="heatmapOverlay">
+                                  <div id="heatmapContainerWrapper"><div id="heatmapContainer"></div></div>
+                                </div>
+                                <div class="HeatTooltip"></div>
                             </div>
                         </div>
                     </div>
