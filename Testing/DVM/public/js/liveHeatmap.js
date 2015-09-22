@@ -15,7 +15,7 @@
     tooltip.style.OTransform = transform; /* Opera */
     tooltip.style.WebkitTransform = transform; /* Safari and Chrome */
     tooltip.style.transform = transform; /* One day, my pretty */
-    tooltip.innerHTML = value
+    tooltip.innerHTML = value;
   }
 // -----------------------
 
@@ -31,11 +31,9 @@
   var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
   Websocket.on('httpServer_ord', function(ord){
-    console.log('Received Co-ord:' + ord);
-    var heatCoords = ord.split(",");
-    updateToolTip(parseInt(heatCoords[0]),parseInt(heatCoords[1]),"DeviceID_1");
+    updateToolTip(ord.x, ord.y, ord.ID);
     tooltip.style.display = 'block';
-    heatmap.addData({ x: parseInt(heatCoords[0]), y: parseInt(heatCoords[1]) , value: 1 });
+    heatmap.addData({ x: ord.x, y: ord.y , value: 1 });
   });
 
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
@@ -43,7 +41,7 @@
     e.preventDefault();
     var x = e.layerX;
     var y = e.layerY;
-    updateToolTip(x,y,"DeviceID_1");
+    updateToolTip(x,y,"DeviceID_");
     tooltip.style.display = 'block';
     heatmap.addData({ x: x, y: y, value: 1 });
   };
