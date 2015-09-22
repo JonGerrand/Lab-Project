@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.3';
+var tcp_HOST = '192.168.43.192';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -33,8 +33,7 @@ var getTimeStamp = function(dateInfo){
   } else{
      var d = new Date(dateInfo);
   }
-  return d.getYear() + ":" + d.getMonth() + ":" + d.getDate() + ":" + d.getHours() +
-          ":" + d.getMinutes() + ":" + d.getSeconds() + ":" + d.getMilliseconds();
+  return d;
 };
 
 var convertMsToTimestamp = function(msString){
@@ -49,31 +48,39 @@ var getType = function(element){
 //----------------------------------------------
 
 //------------====StreamExtractor====------------
-var StreamDataUnpacker = function(){
+var StreamDataUnpacker = function(trackDevice){
+  this.trackDevice = trackDevice;
+  this.prevXPos = 0;
+  this.prevYPos = 0;
   this.xPos = 0;
   this.yPos = 0;
   this.deviceID = "";
-  this.timeStamp = "";
+  this.prevTimeStamp = new Date();
+  this.timeStamp = new Date();
   this.unpackData = function(dataPoint){
     var unpackedString = dataPoint.split(",");
     if(getType(unpackedString[0]) === 'string'){
       this.deviceID = unpackedString[0];
     }
     if(getType(unpackedString[1]) === 'string'){
+      this.prevXPos = this.xPos;
       this.xPos = unpackedString[1];
     }
     if(getType(unpackedString[2]) === 'string'){
+      this.prevYPos = this.yPos;
       this.yPos = unpackedString[2];
     }
     if(getType(unpackedString[3]) === 'string'){
-      this.timeStamp = unpackedString[3];
+      var recvTime = parseFloat(unpackedString[3]);
+      this.prevTimeStamp = this.timeStamp;
+      this.timeStamp = getTimeStamp(recvTime);
     }
   }
   this.getXPos = function(){
-    return this.xPos;
+    return parseInt(this.xPos);
   }
   this.getYPos = function(){
-    return this.yPos;
+    return parseInt(this.yPos);
   }
   this.getDeviceID = function(){
     return this.deviceID;
@@ -81,8 +88,16 @@ var StreamDataUnpacker = function(){
   this.getTimeStamp = function(){
     return this.timeStamp;
   }
+  this.getVelocity = function(){
+    var xVel = 0;
+    var yVel = 0;
+    var resVel = 0;
+    xVel = (this.xPos-this.prevXPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
+    yVel = (this.yPos-this.prevYPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
+    return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
+  }
 }
-var DVMDataUnpacker = new StreamDataUnpacker();
+var DVMDataUnpacker = new StreamDataUnpacker("Device1");
 //-----------------------------------------------
 
 //------------====HistoricalQueries====------------
@@ -118,8 +133,8 @@ var MovementRecord = function(model){
     queryObject.verbose = true;
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      console.log(results);
-      console.log(stats);
+      // console.log(results);
+      // console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   } //getPosition
@@ -128,7 +143,7 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -139,13 +154,8 @@ var mPointSchema = new mongoose.Schema({
   TimeStamp: Date
 });
 
-var historicalMPointSchema = new mongoose.Schema({
-  _id: Date,
-  value: {id:String, x:Number, y:Number}
-});
 // Define models
 var mPoint = mongoose.model('mPoint', mPointSchema);
-var mPointMapRed = mongoose.model('mPointMRresult',historicalMPointSchema);
 // Create MovementRecord
 var movementHistory = new MovementRecord(mPoint);
 //----------------------------------------------
@@ -174,7 +184,13 @@ webSock.sockets.on("connection", function(socket){
       console.log("Received Data: " + data);
       if(data.search("SARM") === -1){
           DVMDataUnpacker.unpackData(data);
-          socket.emit("httpServer_ord", DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+          console.log(DVMDataUnpacker.getVelocity());
+          // Packet format: [x,y,DevName]
+          socket.emit("httpServer_ord", {x:DVMDataUnpacker.getXPos(),
+                                         y:DVMDataUnpacker.getYPos(),
+                                         ID:DVMDataUnpacker.getDeviceID()});
+          // Packet format: [vel1, vel]
+          socket.emit("httpServer_vel", [DVMDataUnpacker.getVelocity(),2]);
           //socket.emit("httpServer_alert", data);
           // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
         }
