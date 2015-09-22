@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.3';
+var HOST = '192.168.43.192';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -145,7 +145,7 @@ function DataUnpacker(){
     }
   };
   this.outputDVMData = function(){
-    return this.deviceID + "," + this.xPos + "," + this.yPos + "," + this.timeStamp;
+    return this.deviceID + "," + this.xPos + "," + this.yPos + "," + this.timeStamp.getTime();
   }
   this.outputDSMData = function(){
     return {"DeviceID":this.deviceID,"xPos":this.xPos, "yPos":this.yPos,
@@ -156,7 +156,7 @@ function DataUnpacker(){
 
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
