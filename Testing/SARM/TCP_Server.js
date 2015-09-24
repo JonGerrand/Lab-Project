@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.43.192';
+var HOST = '192.168.1.11';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -131,12 +131,12 @@ function DataUnpacker(){
     if(getType(this.deviceID) != 'string'){
       throw new DataUnpackerException('Invalid Device ID');
     }
-    this.xPos = Math.round(parseFloat(separatedData[1]));
-    if((getType(this.xPos) != 'number') || (this.xPos < 0)){
+    this.xPos = parseFloat(separatedData[1]);
+    if((getType(this.xPos) != 'number')){
       throw new DataUnpackerException('Invalid x-Coordinate');
     }
-    this.yPos = Math.round(parseFloat(separatedData[2]));
-    if((getType(this.yPos) != 'number') || (this.yPos < 0)){
+    this.yPos = parseFloat(separatedData[2]);
+    if((getType(this.yPos) != 'number')){
       throw new DataUnpackerException('Invalid y-Coordinate');
     }
     this.timeStamp = convertMsToTimestamp(separatedData[3]);
@@ -156,7 +156,7 @@ function DataUnpacker(){
 
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema

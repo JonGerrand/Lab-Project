@@ -8,19 +8,26 @@ var client = new net.Socket();
 client.setKeepAlive(true);
 var xData = 0;
 var genRandomNum = function(min,max){
-  return Math.floor(Math.random() * max) + min;
+  return (Math.random() * max) + min;
 }
 
-var sendArray = "TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
+var sendArray = "DeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
 console.log(sendArray);
 
-client.connect(4040, '192.168.43.192', function(){
+client.connect(4040, '192.168.1.11', function(){
   console.log('Connected to remote Server');
 
   setInterval(function(){
     console.log('Streaming Data: ' + xData);
     xData = xData +1;
-    client.write("TestDeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + "," +
+    client.write("iPhone," + genRandomNum(0,5) + "," + genRandomNum(0,4) + "," +
+                (1442404311.781545+xData).toString());
+  },30);
+
+  setInterval(function(){
+    console.log('Streaming Data: ' + xData);
+    xData = xData +1;
+    client.write("iPad," + genRandomNum(0,5) + "," + genRandomNum(0,4) + "," +
                 (1442404311.781545+xData).toString());
   },30);
 
