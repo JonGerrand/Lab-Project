@@ -17,11 +17,10 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.43.192';
+var tcp_HOST = '192.168.1.11';
 
 //Routing Config for express
 var routes = require('./routes/index');
-//var users = require('./routes/users');
 
 //Bind express object to App object
 var app = express();
@@ -59,28 +58,33 @@ var StreamDataUnpacker = function(trackDevice){
   this.timeStamp = new Date();
   this.unpackData = function(dataPoint){
     var unpackedString = dataPoint.split(",");
-    if(getType(unpackedString[0]) === 'string'){
-      this.deviceID = unpackedString[0];
+    if(unpackedString[0] === this.trackDevice){
+        if(getType(unpackedString[0]) === 'string'){
+          this.deviceID = unpackedString[0];
+        }
+        if(getType(unpackedString[1]) === 'string'){
+          this.prevXPos = this.xPos;
+          this.xPos = unpackedString[1];
+        }
+        if(getType(unpackedString[2]) === 'string'){
+          this.prevYPos = this.yPos;
+          this.yPos = unpackedString[2];
+        }
+        if(getType(unpackedString[3]) === 'string'){
+          var recvTime = parseFloat(unpackedString[3]);
+          this.prevTimeStamp = this.timeStamp;
+          this.timeStamp = getTimeStamp(recvTime);
+        }
+        return true;
+      } else {
+        return false;
+      }
     }
-    if(getType(unpackedString[1]) === 'string'){
-      this.prevXPos = this.xPos;
-      this.xPos = unpackedString[1];
-    }
-    if(getType(unpackedString[2]) === 'string'){
-      this.prevYPos = this.yPos;
-      this.yPos = unpackedString[2];
-    }
-    if(getType(unpackedString[3]) === 'string'){
-      var recvTime = parseFloat(unpackedString[3]);
-      this.prevTimeStamp = this.timeStamp;
-      this.timeStamp = getTimeStamp(recvTime);
-    }
-  }
   this.getXPos = function(){
-    return parseInt(this.xPos);
+    return parseFloat(this.xPos);
   }
   this.getYPos = function(){
-    return parseInt(this.yPos);
+    return parseFloat(this.yPos);
   }
   this.getDeviceID = function(){
     return this.deviceID;
@@ -97,7 +101,11 @@ var StreamDataUnpacker = function(trackDevice){
     return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
   }
 }
-var DVMDataUnpacker = new StreamDataUnpacker("Device1");
+var DataUnpackerArray = [];
+var DataUnpacker_devOne = new StreamDataUnpacker("iPhone");
+var DataUnpacker_devTwo = new StreamDataUnpacker("iPad");
+DataUnpackerArray.push(DataUnpacker_devOne);
+DataUnpackerArray.push(DataUnpacker_devTwo);
 //-----------------------------------------------
 
 //------------====HistoricalQueries====------------
@@ -116,8 +124,6 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      console.log(results);
-      console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
@@ -133,8 +139,6 @@ var MovementRecord = function(model){
     queryObject.verbose = true;
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      // console.log(results);
-      // console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   } //getPosition
@@ -143,7 +147,7 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -183,16 +187,23 @@ webSock.sockets.on("connection", function(socket){
     tcpClient.on('data', function(data){
       console.log("Received Data: " + data);
       if(data.search("SARM") === -1){
-          DVMDataUnpacker.unpackData(data);
-          console.log(DVMDataUnpacker.getVelocity());
-          // Packet format: [x,y,DevName]
-          socket.emit("httpServer_ord", {x:DVMDataUnpacker.getXPos(),
-                                         y:DVMDataUnpacker.getYPos(),
-                                         ID:DVMDataUnpacker.getDeviceID()});
-          // Packet format: [vel1, vel]
-          socket.emit("httpServer_vel", [DVMDataUnpacker.getVelocity(),2]);
-          //socket.emit("httpServer_alert", data);
-          // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+        // Assign data to correct device aggregator
+        for (var i = 0; i < DataUnpackerArray.length; i++) {
+          if(DataUnpackerArray[i].unpackData(data) === true){
+            // Packet format: [x,y,DevName]
+            socket.emit("httpServer_ord", {x:DataUnpackerArray[i].getXPos(),
+                                           y:DataUnpackerArray[i].getYPos(),
+                                           ID:DataUnpackerArray[i].getDeviceID()});
+            // Packet format: [ID, vel]
+            socket.emit("httpServer_vel", {ID:DataUnpackerArray[i].getDeviceID(),
+                                          vel:DataUnpackerArray[i].getVelocity()});
+            // Packet format: [ID, areaStatus] : TODO
+            socket.emit("httpServer_stats", {ID:DataUnpackerArray[i].getDeviceID(),
+                                             areaStatus:1});
+            //socket.emit("httpServer_alert", data);
+            // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+            }
+          }
         }
       });
     // Web socket closed
