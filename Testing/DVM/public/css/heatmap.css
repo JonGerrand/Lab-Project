@@ -10,11 +10,23 @@
   background-size: 100% 100%;
 }
 
-.HeatTooltip{
+.HeatTooltip1{
   position:absolute;
   left:0;
   top:0;
-  background:rgba(143, 49, 49, 0.8);
+  background:rgba(32, 152, 2, 0.8);
+  color:white;
+  font-size:14px;
+  padding:5px;
+  line-height:18px;
+  display:none;
+}
+
+.HeatTooltip2{
+  position:absolute;
+  left:0;
+  top:0;
+  background:rgba(0, 11, 158, 0.8);
   color:white;
   font-size:14px;
   padding:5px;

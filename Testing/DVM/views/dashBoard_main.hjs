@@ -15,9 +15,12 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
+    <link href="css/liveStat.css" rel="stylesheet">
     <link href="css/sb-admin.css" rel="stylesheet">
     <link href="css/heatmap.css" rel="stylesheet">
     <link href="css/livestream.css" rel="stylesheet">
+
+
 
     <!-- Morris Charts CSS -->
     <link href="css/plugins/morris.css" rel="stylesheet">
@@ -155,10 +158,9 @@
                                 <h3 class="panel-title"><i class="fa fa-dashboard fa-fw"></i> Surveilance area</h3>
                             </div>
                             <div class="panel-body">
-                                <div id="heatmapOverlay">
-                                  <div id="heatmapContainerWrapper"><div id="heatmapContainer"></div></div>
-                                </div>
-                                <div class="HeatTooltip"></div>
+                                <div id="heatmapContainerWrapper"><div id="heatmapContainer"></div></div>
+                                <div class="HeatTooltip1"></div>
+                                <div class="HeatTooltip2"></div>
                             </div>
                         </div>
                     </div>
@@ -167,7 +169,7 @@
 
                 <!-- Supporting Vis -->
                 <div class="row">
-                    <div class="col-lg-9">
+                    <div class="col-lg-8">
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <h3 class="panel-title"><i class="fa fa-dashboard fa-fw"></i> Velocity Stream Graph</h3>
@@ -178,49 +180,48 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3">
+                    <div class="col-lg-4">
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <h3 class="panel-title"><i class="fa fa-clock-o fa-fw"></i> Live Statistics</h3>
                             </div>
-                            <div class="panel-body">
-                                <div class="list-group">
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">just now</span>
-                                        <i class="fa fa-fw fa-calendar"></i> Calendar updated
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">4 minutes ago</span>
-                                        <i class="fa fa-fw fa-comment"></i> Commented on a post
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">23 minutes ago</span>
-                                        <i class="fa fa-fw fa-truck"></i> Order 392 shipped
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">46 minutes ago</span>
-                                        <i class="fa fa-fw fa-money"></i> Invoice 653 has been paid
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">1 hour ago</span>
-                                        <i class="fa fa-fw fa-user"></i> A new user has been added
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">2 hours ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "pick up dry cleaning"
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">yesterday</span>
-                                        <i class="fa fa-fw fa-globe"></i> Saved the world
-                                    </a>
-                                    <a href="#" class="list-group-item">
-                                        <span class="badge">two days ago</span>
-                                        <i class="fa fa-fw fa-check"></i> Completed task: "fix error on sales page"
-                                    </a>
-                                </div>
-                                <div class="text-right">
-                                    <a href="#">View All Activity <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
+                            <div class="table-responsive">
+                              <table class="table table-bordered table-hover table-striped">
+                                  <thead>
+                                      <tr>
+                                          <th>Device Name</th>
+                                          <th>ID Color</th>
+                                          <th>Time in Area (sec)</th>
+                                          <th>Entry frequency</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr class="active" id="liveStat1">
+                                          <td>iPhone</td>
+                                          <td>
+                                            <div class="progress">
+                                              <div class="progress-bar progress-bar-dev1" role="progressbar" style="width: 100%;">
+                                            </div>
+                                          </td>
+                                          <td id="dev1Time">
+                                            <label id="minutes1">00</label>:<label id="seconds1">00</label>
+                                          </td>
+                                          <td id="dev1Feq">0</td>
+                                      </tr>
+                                      <tr class="active" id="liveStat2">
+                                          <td>iPad</td>
+                                          <td>
+                                            <div class="progress">
+                                              <div class="progress-bar progress-bar-dev2" role="progressbar" style="width: 100%;">
+                                            </div>
+                                          </td>
+                                          <td id="dev2Time">
+                                            <label id="minutes2">00</label>:<label id="seconds2">00</label>
+                                          </td>
+                                          <td id="dev2Feq">0</td>
+                                      </tr>
+                                  </tbody>
+                              </table>
                             </div>
                         </div>
                     </div>
@@ -257,6 +258,7 @@
     <script src='js/heatmap.js'></script>
     <script src='js/liveHeatmap.js'></script>
     <script src='js/liveSpeedStream.js'></script>
+    <script src='js/liveStats.js'></script>
 
 
     <!--  Live Updates -->

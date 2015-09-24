@@ -3,10 +3,12 @@
 // Live stream data
 var dev1Data = 0;
 var dev2Data = 0;
+var dev1ID = "iPhone";
+var dev2ID = "iPad";
 
-Websocket.on('httpServer_vel',function(vel){
-  dev1Data = vel[0];
-  dev2Data = vel[1];
+Websocket.on('httpServer_vel',function(data){
+  if(dev1ID === data.ID) dev1Data = data.vel;
+  if(dev2ID === data.ID) dev2Data = data.vel;
 });
 
 var n = 243,
@@ -16,8 +18,8 @@ var n = 243,
     data1 = d3.range(n).map(function() { return 0; });
     data2 = d3.range(n).map(function() { return 0; });
 
-var margin = {top: 6, right: 60, bottom: 20, left: 30},
-    width = $("#liveSpeedStream").width() - margin.right,
+var margin = {top: 6, right: 10, bottom: 40, left: 50},
+    width = $("#liveSpeedStream").width() - margin.right - margin.left,
     height = 300 - margin.top - margin.bottom;
 
 var x = d3.time.scale()
@@ -41,7 +43,6 @@ var line2 = d3.svg.line()
 var svg = d3.select("#liveSpeedStream").append("p").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .style("margin-left", margin.left + "px")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -56,9 +57,22 @@ var axisX = svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(x.axis = d3.svg.axis().scale(x).orient("bottom"));
 
+svg.append("text")
+    .attr("y", height + margin.bottom -2)
+    .attr("x", width/2)
+    .attr("class", "axisText")
+    .text("Current Time (m:s)");
+
 var axisY = svg.append("g")
     .attr("class", "y axis")
     .call(y.axis = d3.svg.axis().scale(y).orient("left"));
+
+svg.append("text")
+    .attr("transform","rotate(-90)")
+    .attr("y",0-margin.left/1.5)
+    .attr("x", 0-(height/2))
+    .attr("class", "axisText")
+    .text("Velocity (m/s)")
 
 var path1 = svg.append("g")
     .attr("clip-path", "url(#clip)")

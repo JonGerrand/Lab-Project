@@ -14,14 +14,14 @@ svg {
 }
 .line1 {
   fill: none;
-  stroke: #980202;
-  opacity: 0.5;
+  stroke: #209802;
+  opacity: 0.8;
   stroke-width: 3px;
 }
 .line2 {
   fill: none;
   stroke: #000b9e;
-  opacity: 0.5;
+  opacity: 0.8;
   stroke-width: 3px;
 }
 .axis path,
@@ -29,4 +29,9 @@ svg {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+.axisText{
+  text-anchor:middle;
+  font: 14px sans-serif;
+  font-weight: bold;
 }

@@ -18,12 +18,6 @@ var heatmap = h337.create({
 });
 var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
-Websocket.on('httpServer_ord', function(ord){
-  console.log('Received Co-ord:' + ord);
-  var heatCoords = ord.split(",");
-  heatmap.addData({ x: parseInt(heatCoords[0]), y: parseInt(heatCoords[1]) , value: 1 });
-});
-
 // Receive historic data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
   var histPoints = [];
