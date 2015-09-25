@@ -51,7 +51,7 @@
   var heatmap = h337.create({
     container: document.getElementById('heatmapContainer'),
     maxOpacity: .6,
-    radius: 30,
+    radius: 10,
     blur: .90,
     // backgroundColor with alpha so you can see through it
     backgroundColor: 'rgba(19, 122, 154, 0.12)'
@@ -66,7 +66,7 @@
 
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
     // we need preventDefault for the touchmove
-    e.preventDefault();
+    // e.preventDefault();
     var x = e.layerX;
     var y = e.layerY;
     updateToolTip(x,y,"iPad");
@@ -77,8 +77,8 @@
     tooltip2.style.display = 'none';
   };
 
-  heatmapContainer.onclick = function(e) {
-    var x = e.layerX;
-    var y = e.layerY;
-    heatmap.addData({ x: x, y: y, value: 1 });
-  };
+  // heatmapContainer.onclick = function(e) {
+  //   var x = e.layerX;
+  //   var y = e.layerY;
+  //   heatmap.addData({ x: x, y: y, value: 1 });
+  // };

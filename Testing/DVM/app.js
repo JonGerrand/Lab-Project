@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 4040;
-var tcp_HOST = '192.168.1.11';
+var tcp_HOST = '192.168.1.3';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -124,6 +124,7 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
+      console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
@@ -147,7 +148,7 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema

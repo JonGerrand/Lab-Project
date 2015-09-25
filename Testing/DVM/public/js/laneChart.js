@@ -139,8 +139,8 @@ var data = randomData()
   , items = data.items
   , now = new Date();
 
-var margin = {top: 20, right: 15, bottom: 15, left: 60}
-  , width = 960 - margin.left - margin.right
+var margin = {top: 20, right: 30, bottom: 15, left: 60}
+  , width = $('#laneChart').width() - margin.left - margin.right
   , height = 500 - margin.top - margin.bottom
   , miniHeight = lanes.length * 12 + 50
   , mainHeight = height - miniHeight - 50;

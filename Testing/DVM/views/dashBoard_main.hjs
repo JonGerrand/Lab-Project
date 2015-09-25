@@ -110,10 +110,10 @@
                                 <a href="historicalHeatmap">Historical Heatmap</a>
                             </li>
                             <li>
-                                <a href="stringGraph">String graph</a>
+                                <a href="presenceLaneChart">Presence Lane Chart</a>
                             </li>
                             <li>
-                                <a href="presenceLaneChart">Presence Lane Chart</a>
+                                <a href="stringGraph">String graph</a>
                             </li>
                         </ul>
                     </li>
