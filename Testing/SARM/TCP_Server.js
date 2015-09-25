@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.11';
+var HOST = '192.168.1.3';
 var PORT = 4040;
 sinkList = [];
 var replicated = 0;
@@ -156,7 +156,7 @@ function DataUnpacker(){
 
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/EndToEndOne_1');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema

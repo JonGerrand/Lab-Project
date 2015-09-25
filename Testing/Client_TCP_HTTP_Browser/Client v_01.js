@@ -14,7 +14,7 @@ var genRandomNum = function(min,max){
 var sendArray = "DeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
 console.log(sendArray);
 
-client.connect(4040, '192.168.1.11', function(){
+client.connect(4040, '192.168.1.3', function(){
   console.log('Connected to remote Server');
 
   setInterval(function(){
