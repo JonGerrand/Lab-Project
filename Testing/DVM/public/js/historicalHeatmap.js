@@ -61,15 +61,15 @@ $('#TrialButton').click(function(){
   var date2 = $("#datetimepicker2").data();
   date2 = new Date(date2.date);
   if(isValidDate(date1) === false || isValidDate(date2) ===false){
-    window.alert("Invalid date-range selected. Ensure both date ranges are logical");
+    window.alert("Invalid date-range selected. Ensure both date ranges are logical.");
   } else {
     $('#TrialButton').get(0).lastChild.nodeValue = " Loading...";
     $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");
-    Websocket.emit('histHeatmap_query',{min: date1, max: date2});
+    Websocket.emit('Temporal_query',{min: date1, max: date2});
   }
 });
 
-// Receive historic data from query
+// Receive Temporal data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
   var histPoints = [];
   for (var i = 0; i < histOrds.length; i++) {

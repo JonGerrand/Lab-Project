@@ -61,7 +61,7 @@
   Websocket.on('httpServer_ord', function(ord){
     ordContainer = scaleOrds(ord.x,ord.y);
     updateToolTip(ordContainer.x, ordContainer.y, ord.ID);
-    heatmap.addData({ x: ordContainer.x, y: ordContainer.y , value: 1 });
+    heatmap.addData({ x: ordContainer.x, y: ordContainer.y , value: 0.1 });
   });
 
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
@@ -70,7 +70,7 @@
     var x = e.layerX;
     var y = e.layerY;
     updateToolTip(x,y,"iPad");
-    heatmap.addData({ x: x, y: y, value: 1 });
+    heatmap.addData({ x: x, y: y, value: 0.1 });
   };
 
   heatmapContainer.onmouseout = function(){
