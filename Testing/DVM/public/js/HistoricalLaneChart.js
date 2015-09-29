@@ -93,9 +93,14 @@ $(function () {
            }else{
              // Insert old item
              end1 = zonedData[i-1].date;
-             desc1 = "Time in reigion: " + toString(end1 - start1);
-             laneItems.push({id:IDcounter, name:name1, lane:lane1, start:new Date(start1),
-                             end:new Date(end1), desc:desc1});
+             var stDate1 = new Date(start1);
+             var endDate1 = new Date(end1);
+             var tDiff1 = (endDate1 - stDate1)
+             desc1 = "Time in reigion: " + parseFloat(Math.round(((tDiff1 % 86400000) % 3600000) / 60000)) +
+                      "min, " + parseFloat(Math.round((((tDiff1 % 86400000) % 3600000) % 60000) / 1000))+"sec";
+             laneItems.push({id:IDcounter, name:name1, lane:lane1, start:stDate1,
+                             end:endDate1, desc:desc1, color:"#209802",
+                             dev:"dev1"});
              // Format new entry
              ID1 = IDcounter;
              name1 = zonedData[i].ID;
@@ -117,9 +122,14 @@ $(function () {
          }else{
            // Insert old item
            end2 = zonedData[i-1].date;
-           desc2 = "Time in reigion: " + toString(end1 - start1);
-           laneItems.push({id:IDcounter, name:name2, lane:lane2, start:start2, end:end2,
-                           desc:desc2});
+           var stDate2 = new Date(start2);
+           var endDate2 = new Date(end2);
+           var tDiff2 = (endDate2 - stDate2)
+           desc2 = "Time in reigion: " + parseFloat(Math.round(((tDiff2 % 86400000) % 3600000) / 60000)) +
+                    "min, " + parseFloat(Math.round((((tDiff2 % 86400000) % 3600000) % 60000) / 1000))+"sec";
+           laneItems.push({id:IDcounter, name:name2, lane:lane2, start:stDate2,
+                           end:endDate2, desc:desc2, color:"#000b9e",
+                           dev:"dev2"});
            // Format new entry
            ID2 = IDcounter;
            name2 = zonedData[i].ID;
@@ -188,11 +198,13 @@ $(function () {
              var item = subLane[j];
              items.push({
                id: item.id,
+               name: item.name,
                lane: laneId,
                start: item.start,
                end: item.end,
                class: item.end > now ? 'future' : 'past',
-               desc: item.desc
+               desc: item.desc,
+               color:item.color
              });
            }
            laneId++;

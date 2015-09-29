@@ -74,7 +74,7 @@ Websocket.on('httpServer_histOrd',function(histOrds){
   var histPoints = [];
   for (var i = 0; i < histOrds.length; i++) {
     ords = scaleOrds(histOrds[i].value.x,histOrds[i].value.y)
-    var point = {x:ords.x, y:ords.y, value:1};
+    var point = {x:ords.x, y:ords.y, value:0.1};
     histPoints.push(point);
   }
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";

@@ -32,6 +32,12 @@ var createLaneChart = function(inData){
   	.attr('height', height + margin.top + margin.bottom)
   	.attr('class', 'chart');
 
+
+  var div = d3.select("#laneChart").append("div")
+      .attr("class", "HistTooltip")
+      .style("opacity", 0);
+
+
   chart.append('defs').append('clipPath')
   	.attr('id', 'clip')
   	.append('rect')
@@ -180,24 +186,17 @@ var createLaneChart = function(inData){
   	.attr('visibility', 'hidden')
   	.on('mouseup', moveBrush);
 
-  // draw the selection area
-  // var brush = d3.svg.brush()
-  // 	.x(x)
-  // 	.extent([d3.time.monday(now),d3.time.saturday.ceil(now)])
-  // 	.on("brush", display);
   var brush = d3.svg.brush()
     .x(x)
     .extent([d3.time.second(now),d3.time.second.ceil(future)])
     .on("brush", display);
-    // console.log(d3.time.minute(now));
-    // console.log(d3.time.minute.ceil(future));
 
   mini.append('g')
   	.attr('class', 'x brush')
   	.call(brush)
   	.selectAll('rect')
-  		.attr('y', 1)
-  		.attr('height', miniHeight - 1);
+  	.attr('y', 1)
+  	.attr('height', miniHeight - 1);
 
   mini.selectAll('rect.background').remove();
   display();
@@ -266,23 +265,27 @@ var createLaneChart = function(inData){
   		.attr('y', function(d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
   		.attr('width', function(d) { return x1(d.end) - x1(d.start); })
   		.attr('height', function(d) { return .8 * y1(1); })
-  		.attr('class', function(d) { return 'mainItem ' + d.class; });
+      .attr('fill',function(d){return d.color;})
+  		.attr('class', function(d) { return 'mainItem ' + d.dev; })
+      .on("mouseover", function(d){
+                      div.transition()
+                      .duration(100)
+                      .style("opacity", 9);
+                      div .html(("DeviceID:" + d.name + "<br/>"+
+                                 "Occurance Number: " + d.id + "<br/>" +
+                                 d.desc))
+                      .style("left", d3.select(this).attr("x") + "px")
+                      .style("top", d3.select(this).attr("y") + 10 + "px");
+                      d3.select(this).classed("highlight", true);
+                    })
+
+		  .on("mouseout", function(d){
+   			            div.transition()
+                    .duration(100)
+                    .style("opacity", 0); d3.select(this).classed("highlight",false);
+   			 });;
 
   	rects.exit().remove();
-
-  	// update the item labels
-  	labels = itemRects.selectAll('text')
-  		.data(visItems, function (d) { return d.id; })
-  		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; });
-
-  	labels.enter().append('text')
-  		.text(function (d) { return 'Item\n\n\n\n Id: ' + d.id; })
-  		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; })
-  		.attr('y', function(d) { return y1(d.lane) + .4 * y1(1) + 0.5; })
-  		.attr('text-anchor', 'start')
-  		.attr('class', 'itemLabel');
-
-  	labels.exit().remove();
   }
 
   function moveBrush () {
