@@ -25,6 +25,7 @@ $(function () {
      if(getType(date) !== "date") return false;
      return !isNaN(date.getTime());
    }
+  //  --------------------------
 
 
 // Query button
@@ -39,6 +40,33 @@ $('#TrialButton').click(function(){
   } else {
     $('#TrialButton').get(0).lastChild.nodeValue = " Loading...";
     $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");
-    // TODO Add Websocket Emits here
+    Websocket.emit('Temporal_query',{min: date1, max: date2});
+
   }
+});
+
+// Receive Temporal data from query
+Websocket.on('httpServer_histOrd',function(histOrds){
+  var dev1Name = "iPhone";
+  var dev2Name = "iPad";
+  var dev1Data = [];
+  var dev2Data = [];
+  var stringGraphData = {};
+  for (var i = 0; i < histOrds.length; i++) {
+    var point = {x:histOrds[i].value.x, y:histOrds[i].value.y, date:new Date(histOrds[i]._id), id:histOrds[i].value.id};
+    //This part of the code can be chaged to be scalable
+    if(point.id === dev1Name){
+      dev1Data.push(point);
+    }
+    if(point.id === dev2Name){
+      dev2Data.push(point);
+    }
+  }
+  // Push resultant data to vis object
+  stringGraphData = {dev1:dev1Data, dev2:dev2Data};
+  console.log(stringGraphData);
+  $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";
+  $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");
+  d3.select("svg").remove();
+  createStringGraph(stringGraphData);
 });

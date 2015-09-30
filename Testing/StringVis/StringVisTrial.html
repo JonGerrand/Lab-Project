@@ -2,6 +2,14 @@
 <meta charset="utf-8">
 <style>
 
+.redline{
+  stroke: red;
+}
+
+.greenline{
+  stroke: green;
+}
+
 </style>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
@@ -30,6 +38,24 @@ var svgContainer = d3.select("body").append("svg")
                                     .attr("width", 800)
                                     .attr("height", 800);
 
+// Create filter element for string graph
+var defs = svgContainer.append('defs');
+
+var filter = defs.append('filter')
+                 .attr('id','lineBlur');
+
+filter.append('feGaussianBlur')
+        .attr('stdDeviation', 2.5)
+        .attr('result','coloredBlur');
+
+var feMerge = filter.append('feMerge');
+
+feMerge.append('feMergeNode')
+        .attr('in','coloredBlur')
+
+feMerge.append('feMergeNode')
+        .attr('in','SourceGraphic');
+
 //The line SVG Path we draw
 var lineGraph = svgContainer.append("path")
                             .attr("d", lineFunction(lineData))
@@ -39,10 +65,17 @@ var lineGraph = svgContainer.append("path")
 
 var lineGraph2 = svgContainer.append("path")
                             .attr("d", lineFunction(lineData2))
-                            .attr("stroke", "red")
+                            .attr("class", "redline")
                             .attr("stroke-width", 2)
                             .attr("fill", "none")
                             .on("mouseover", function(){
-                            d3.select(this).attr("stroke","green");
+                            d3.select(this)
+                              .classed("greenline", true)
+                              .attr("filter","url(#lineBlur)");
+                            })
+                            .on("mouseout", function(){
+                              d3.select(this)
+                              .classed("greenline", false)
+                              .attr("filter","");
                             });
 </script>

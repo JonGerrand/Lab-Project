@@ -104,8 +104,6 @@ var createLaneChart = function(inData){
   	.tickFormat(d3.time.format('%H:%M'))
   	.tickSize(6, 0, 0);
 
-    console.log((x.domain()[1] - x.domain()[0]));
-
   var x1DateAxis = d3.svg.axis()
   	.scale(x1)
   	.orient('bottom')
