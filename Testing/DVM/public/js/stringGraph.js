@@ -15,29 +15,20 @@ var createStringGraph = function(inData){
   };
 
   // Variable declaration
-  var dev1Data = inData.dev1;
-  var dev2Data = inData.dev2;
-  var minDate = {};
-  var maxDate = {};
+  var deviceClass = ["dev1","dev2"];
+  var minDate = d3.min(inData[0], function(d){return d.date;}); //Initial estimate
+  var maxDate = d3.max(inData[0], function(d){return d.date;}); //Initial estimate
   var margin = {top: 10, right: 20, bottom: 10, left: 20}
     , width = $('#stringVis').width() - margin.left - margin.right
     , height = 600 - margin.top - margin.bottom
     , brushHeight = height * 0.1
     , mainHeight = height - brushHeight;
   // Max-min values
-  var mindate1 = d3.min(dev1Data, function(d){return d.date;});
-  var mindate2 = d3.min(dev2Data, function(d){return d.date;});
-  if(mindate1 > mindate2){
-    minDate = mindate2;
-  } else {
-    minDate = mindate1
-  }
-  var maxdate1 = d3.max(dev1Data, function(d){return d.date;});
-  var maxdate2 = d3.max(dev2Data, function(d){return d.date;});
-  if(maxdate1 > maxdate2){
-    maxDate = maxdate2;
-  } else {
-    maxDate = mindate1;
+  for (var i = 0; i < inData.length; i++) {
+    var currentMinDate = d3.min(inData[i], function(d){return d.date;});
+    var currentMaxDate = d3.max(inData[i], function(d){return d.date;});
+    if(currentMinDate < minDate) minDate = currentMinDate;
+    if(currentMaxDate > maxDate) maxDate = currentMaxDate;
   }
 
   // Scale configuration
@@ -51,11 +42,25 @@ var createStringGraph = function(inData){
     .domain([0,4])
     .range([0,mainHeight]);
 
+  // Create Legend div
+  var tooltip = d3.select("#stringVis").append("div")
+      .attr("class", "StringTooltip")
+      .style("opacity", 0)
+      .attr("x", 10)
+      .attr("y", 10);
+
  //The SVG Container
  var svgContainer = d3.select("#stringVis")
      .append("svg")
-     .attr("width", width + margin.right + margin.left)
+     .attr("width", width + margin.left)
      .attr("height", height + margin.top + margin.bottom);
+
+// Create opaque background
+ var backgroundFade = svgContainer.append("rect")
+      .attr("width", width + margin.right + margin.left)
+      .attr("height", height)
+      .attr("fill","grey")
+      .attr("fill-opacity",0.5);
 
  // Create filter element for string graph
  var defs = svgContainer.append("defs");
@@ -75,21 +80,23 @@ var createStringGraph = function(inData){
  feMerge.append("feMergeNode")
      .attr("in","SourceGraphic");
 
+  // Tick spacing calculation
+  var upSpacing = getUpTickSpacing();
+  var lowSpacing = getLowTickSpacing();
+
  // Create Upper x axis
  var upxDateAxis = d3.svg.axis()
      .scale(x)
      .orient("top")
-     .ticks(d3.time.minutes, (x.domain()[1] - x.domain()[0]) > 3010000 ? 40 : 20)
+    .ticks(d3.time.minutes, upSpacing)
      .tickFormat(d3.time.format("%a %e - %H:%M"))
      .tickSize(6, 0, 0);
-
-     console.log((x.domain()[1] - x.domain()[0]));
 
  // Create Lower x axis
  var lowxDateAxis = d3.svg.axis()
      .scale(x)
      .orient("bottom")
-     .ticks(d3.time.minutes, (x.domain()[1] - x.domain()[0]) > 3010000 ? 10 : 5)
+     .ticks(d3.time.minutes, lowSpacing)
      .tickFormat(d3.time.format("%H:%M"))
      .tickSize(6, 0, 0);
 
@@ -97,11 +104,17 @@ var createStringGraph = function(inData){
  var lineFunction = d3.svg.line()
       .x(function(d) { return xCoordScale(d.x); })
       .y(function(d) { return yCoordScale(d.y); })
-      .interpolate("basis");
+      .interpolate("linear");
+
+// Legend Line creation
+var legendlineFunction = d3.svg.line()
+     .x(function(d) { return d.x; })
+     .y(function(d) { return d.y; })
+     .interpolate("linear");
 
  //create data brush
  var brushArea = svgContainer.append("g")
-      .attr("transform", "translate(" + margin.left + "," + mainHeight + ")")
+      .attr("transform", "translate(" + (margin.left/2) + "," + mainHeight + ")")
       .attr("width", width)
       .attr("height", brushHeight);
 
@@ -150,79 +163,103 @@ lowwerTicks.append("line")
       .attr("height", brushHeight - 1);
 
   // Draw lines
-  var lineGraph1 = svgContainer.append("path")
-        .attr("d", lineFunction(dev1Data))
-        .attr("class", "redline")
-        .attr("stroke-width", 2)
-        .attr("fill", "none")
-        .on("mouseover", function(){
-          var sel = d3.select(this);
-          sel.classed("greenline", true)
-          .attr("filter","url(#lineBlur)");
-          sel.moveToFront();})
-         .on("mouseout", function(){
-           d3.select(this)
-          .classed("greenline", false)
-          .attr("filter","");});
+  for (var i = 0; i < inData.length; i++) {
 
- var lineGraph2 = svgContainer.append("path")
-       .attr("d", lineFunction(dev2Data))
-       .attr("class", "blueline")
-       .attr("stroke-width", 2)
-       .attr("fill", "none")
-       .on("mouseover", function(){
-         var sel = d3.select(this);
-         sel.classed("greenline", true)
-         .attr("filter","url(#lineBlur)");
-         sel.moveToFront();})
-        .on("mouseout", function(){
-          d3.select(this)
-         .classed("greenline", false)
-         .attr("filter","");
-        });
+    drawLines(inData[i],i);
+
+    // Format tooltip
+    var legendElement = tooltip.append("div");
+
+    var legendSVG =  legendElement.append("svg")
+      .attr("width",150)
+      .attr("height", (inData.length*10));
+
+    legendSVG.append("path")
+      .attr("d", legendlineFunction([{"x":1,"y":6},{"x":50,"y":6}]))
+      .attr("class", deviceClass[i])
+      .attr("stroke-width", 3)
+      .attr("fill", "none");
+
+    legendSVG.append("text")
+      .attr("x", 55)
+      .attr("y", 10)
+      .attr("fill","white")
+      .text(inData[i][0].id);
+
+  }
+
+  var LegendRect = svgContainer.append("g")
+      .attr("transform", "translate(0," + 0 + ")");
 
   displayLines();
 
  function displayLines(){
    var minExtent = d3.time.second(brush.extent()[0]);
    var maxExtent = d3.time.second(brush.extent()[1]);
-   var visDev1 = dev1Data.filter(function(d){
-     return d.date < maxExtent && d.date > minExtent
-   });
-   var visDev2 = dev2Data.filter(function(d){
-     return d.date < maxExtent && d.date > minExtent
-   });
-  // Remove previous graphs
-  svgContainer.selectAll("path").remove();
-  // Redraw graphs
-  var lineGraph1 = svgContainer.append("path")
-        .attr("d", lineFunction(visDev1))
-        .attr("class", "redline")
-        .attr("stroke-width", 2)
-        .attr("fill", "none")
-        .on("mouseover", function(){
-          var sel = d3.select(this);
-          sel.classed("greenline", true)
-          .attr("filter","url(#lineBlur)");
-          sel.moveToFront();})
-        .on("mouseout", function(){
-           d3.select(this)
-          .classed("greenline", false)
-          .attr("filter","");});
+   // Remove previous graphs
+   svgContainer.selectAll("path").remove();
 
- var lineGraph2 = svgContainer.append("path")
-       .attr("d", lineFunction(visDev2))
-       .attr("class", "blueline")
-       .attr("stroke-width", 2)
-       .attr("fill", "none")
-       .on("mouseover", function(){
-         var sel = d3.select(this);
-         sel.classed("greenline", true)
-         .attr("filter","url(#lineBlur)");
-         sel.moveToFront();})
-       .on("mouseout", function(){
-         d3.select(this)
-         .classed("greenline", false)
-         .attr("filter","");});
- }
-}
+   for (var i = 0; i < inData.length; i++) {
+     // Filter data
+     var visDat = inData[i].filter(function(d){
+       return d.date < maxExtent && d.date > minExtent
+     });
+      // Redraw graphs
+      drawLines(visDat,i)
+    } //for
+  } //displayLines
+
+  function drawLines(drawData,i){
+
+    svgContainer.append("path")
+    svgContainer.append("path")
+      .attr("d", lineFunction(drawData))
+      .attr("class", deviceClass[i])
+      .attr("stroke-width", 2)
+      .attr("fill", "none")
+      .on("mouseover", function(){
+        d3.select(this)
+        .classed("active", true)
+        .attr("filter","url(#lineBlur)")
+        .moveToFront();
+        tooltip.transition()
+        .duration(100)
+        .style("opacity", 9);
+        })
+      .on("mouseout", function(){
+        d3.select(this)
+        .classed("active", false)
+        .attr("filter","");
+        tooltip.transition()
+        .duration(2000)
+        .style("opacity", 0);
+      });
+    }
+
+  function getUpTickSpacing(){
+    if(x.domain()[1] - x.domain()[0] > 3010000){
+      return 40;
+    }
+    if(x.domain()[1] - x.domain()[0] > 786000){
+      return 20;
+    }
+    if(x.domain()[1] - x.domain()[0] > 550000){
+      return 10;
+    }
+    else return 5;
+  }//getUpTickSpacing
+
+    function getLowTickSpacing(){
+      if(x.domain()[1] - x.domain()[0] > 3010000){
+        return 10;
+      }
+      if(x.domain()[1] - x.domain()[0] > 786000){
+        return 5;
+      }
+      if(x.domain()[1] - x.domain()[0] > 550000){
+        return 2;
+      }
+      else return 1;
+    }//getLowTickSpacing
+
+} //createStringGraph

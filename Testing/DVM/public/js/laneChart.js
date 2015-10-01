@@ -237,9 +237,6 @@ var createLaneChart = function(inData){
   		x1MonthAxis.ticks(d3.time.minutes, 1).tickFormat(d3.time.format('%H:%M'))
   	}
 
-
-  	//x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
-
   	// shift the today line
   	main.select('.main.todayLine')
   		.attr('x1', x1(now) + 0.5)
@@ -269,7 +266,7 @@ var createLaneChart = function(inData){
                       div.transition()
                       .duration(100)
                       .style("opacity", 9);
-                      div .html(("DeviceID:" + d.name + "<br/>"+
+                      div.html(("DeviceID:" + d.name + "<br/>"+
                                  "Occurance Number: " + d.id + "<br/>" +
                                  d.desc))
                       .style("left", d3.select(this).attr("x") + "px")

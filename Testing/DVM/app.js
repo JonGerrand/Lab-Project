@@ -148,6 +148,7 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
+// mongoose.connect('mongodb://192.168.1.3/EndToEndOne_1');
 mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));

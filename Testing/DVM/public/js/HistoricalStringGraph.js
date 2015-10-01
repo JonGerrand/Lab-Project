@@ -51,7 +51,7 @@ Websocket.on('httpServer_histOrd',function(histOrds){
   var dev2Name = "iPad";
   var dev1Data = [];
   var dev2Data = [];
-  var stringGraphData = {};
+  var stringGraphData = [];
   for (var i = 0; i < histOrds.length; i++) {
     var point = {x:histOrds[i].value.x, y:histOrds[i].value.y, date:new Date(histOrds[i]._id), id:histOrds[i].value.id};
     //This part of the code can be chaged to be scalable
@@ -63,7 +63,8 @@ Websocket.on('httpServer_histOrd',function(histOrds){
     }
   }
   // Push resultant data to vis object
-  stringGraphData = {dev1:dev1Data, dev2:dev2Data};
+  stringGraphData.push(dev1Data);
+  stringGraphData.push(dev2Data);
   console.log(stringGraphData);
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";
   $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");

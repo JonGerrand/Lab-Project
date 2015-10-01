@@ -1,12 +1,12 @@
-.redline{
+.dev1{
   stroke: green;
 }
 
-.blueline{
+.dev2{
   stroke: blue;
 }
 
-.greenline{
+.active{
   stroke: yellow;
 }
 
@@ -32,3 +32,21 @@
   background: url(../img/perimeter.png) no-repeat;
   background-size: 100% 100%;
 }
+
+div.StringTooltip {
+	 position: absolute;
+	 width: auto;
+	 font-weight: bold;
+	 height: auto;
+	 opacity: 0.5;
+	 border: 3px solid #dbd9d9;
+	 padding: 10px;
+	 background-color:rgba(9, 9, 9, 0.84);
+	 -webkit-border-radius: 10px;
+	 -moz-border-radius: 10px;
+	 border-radius: 10px;
+	 -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 pointer-events: none;
+ }
