@@ -113,7 +113,7 @@
                       </ul>
                   </li>
                   <li>
-                      <a href="#"><i class="fa fa-fw fa-edit"></i>Combined Analysis</a>
+                      <a href="radialChart"><i class="fa fa-fw fa-edit"></i>Exploratory Analysis</a>
                   </li>
           </div>
           <!-- /.navbar-collapse -->

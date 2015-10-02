@@ -37,10 +37,11 @@ router.get('/stringGraph', function (req, res) {
 });
 
 /* GET main page*/
-router.get('/index', function (req, res) {
-	res.render('index', {
+router.get('/radialChart', function (req, res) {
+	res.render('dashBoard_radialChart', {
 		user:" Jonathan"
 	})
 });
+
 
 module.exports = router;

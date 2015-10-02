@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Presence Lane Chart - 4th Year Project</title>
+    <title>Exploratory Analysis Chart - 4th Year Project</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -128,61 +128,23 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                            Presence Lane Chart
-                            <small>Historical Review of Area Activity</small>
+                            Device Radial-distance Visualisation Chart
+                            <small>Live stream of calculated radial values</small>
                         </h1>
                     </div>
                 </div>
                 <!-- /.row -->
 
-                <!-- Data querying -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-primary" id=historicalHeatmapPanel>
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Query Formulation</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <div class='input-group date' id='datetimepicker1'>
-                                            <input type='text' class="form-control" />
-                                            <span class="input-group-addon">
-                                                <span class="glyphicon glyphicon-calendar"></span>
-                                              </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class='col-md-4'>
-                                    <div class="form-group">
-                                        <div class='input-group date' id='datetimepicker2'>
-                                            <input type='text' class="form-control" />
-                                            <span class="input-group-addon">
-                                                <span class="glyphicon glyphicon-calendar"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                  </div>
-                                <div class="col-md-4">
-                                  <button id="TrialButton" class="btn btn-primary"><span id="mapRedLoading" class=""></span> Submit Date Range</button>
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                        <!--End query-->
-                      </div>
-                      <!-- /.row-->
-
-                <!-- laneChart visualisation -->
+                <!-- Radial visualisation -->
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-info">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-dashboard fa-fw"></i>Time series</h3>
+                                <h3 class="panel-title"><i class="fa fa-dashboard fa-fw"></i>Live Stream</h3>
                             </div>
                             <div class="panel-body">
-                                <!--  -->
-                                <div id="laneChart"></div>
+                                <!-- Dynamic Radial values -->
+                                <div id="radialChart"></div>
                             </div>
                         </div>
                     </div>
@@ -211,13 +173,9 @@
     <!-- Socket.js Javascript -->
     <script src="js/socket.io.js"></script>
 
-    <!--Dynamic time selection-->
-    <script src="js/moments.js"></script>
-    <script src="js/dateTimePicker.js"></script>
+    <!-- Streaming Radial JavaScript -->
+    <script src="js/liveRadialStream.js"></script>
 
-    <!-- Lane chart JavaScript -->
-    <script src="js/laneChart.js"></script>
-    <script src="js/HistoricalLaneChart.js"></script>
 
 
 </body>

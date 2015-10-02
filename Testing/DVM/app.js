@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 7000;
-var tcp_HOST = '192.168.43.192';
+var tcp_HOST = '192.168.1.3';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -54,6 +54,9 @@ var StreamDataUnpacker = function(trackDevice){
   this.xPos = 0;
   this.yPos = 0;
   this.deviceID = "";
+  this.radius1 = 0;
+  this.radius2 = 0;
+  this.radius3 = 0;
   this.prevTimeStamp = new Date();
   this.timeStamp = new Date();
   this.unpackData = function(dataPoint){
@@ -74,6 +77,15 @@ var StreamDataUnpacker = function(trackDevice){
           var recvTime = parseFloat(unpackedString[3]);
           this.prevTimeStamp = this.timeStamp;
           this.timeStamp = getTimeStamp(recvTime);
+        }
+        if(getType(unpackedString[4]) === 'string'){
+          this.radius1 = unpackedString[4];
+        }
+        if(getType(unpackedString[5]) === 'string'){
+          this.radius2 = unpackedString[5];
+        }
+        if(getType(unpackedString[5]) === 'string'){
+          this.radius3 = unpackedString[5];
         }
         return true;
       } else {
@@ -99,6 +111,9 @@ var StreamDataUnpacker = function(trackDevice){
     xVel = (this.xPos-this.prevXPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     yVel = (this.yPos-this.prevYPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
+  }
+  this.getRadii = function(){
+    return [parseFloat(this.radius1),parseFloat(this.radius2),parseFloat(this.radius3)];
   }
 }
 var DataUnpackerArray = [];
@@ -148,8 +163,8 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-// mongoose.connect('mongodb://192.168.1.3/EndToEndOne_1');
-mongoose.connect('mongodb://192.168.43.192/PedestrianTestingDB');
+mongoose.connect('mongodb://192.168.1.3/EndToEnd_Atrium_1');
+// mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -169,6 +184,11 @@ var movementHistory = new MovementRecord(mPoint);
 //----------Socket.io-------------------
 var webSock = socket_io();
 app.io = webSock;
+//--------------------------------------
+
+//-----------General Variables----------
+  var Device1ID = "";
+  var Device2ID = "";
 //--------------------------------------
 
 //Websocket connection handling
@@ -202,8 +222,12 @@ webSock.sockets.on("connection", function(socket){
             // Packet format: [ID, areaStatus] : TODO
             socket.emit("httpServer_stats", {ID:DataUnpackerArray[i].getDeviceID(),
                                              areaStatus:1});
+            // Packet format : [x,y, Devname, [r1,r2,r3]]
+            socket.emit("httpServer_radii", {x:DataUnpackerArray[i].getXPos(),
+                                             y:DataUnpackerArray[i].getYPos(),
+                                             ID:DataUnpackerArray[i].getDeviceID(),
+                                             radii:DataUnpackerArray[i].getRadii()})
             //socket.emit("httpServer_alert", data);
-            // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
             }
           }
         }

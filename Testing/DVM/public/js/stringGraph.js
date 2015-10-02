@@ -20,7 +20,7 @@ var createStringGraph = function(inData){
   var maxDate = d3.max(inData[0], function(d){return d.date;}); //Initial estimate
   var margin = {top: 10, right: 20, bottom: 10, left: 20}
     , width = $('#stringVis').width() - margin.left - margin.right
-    , height = 600 - margin.top - margin.bottom
+    , height = $('#stringVis').width() - margin.top - margin.bottom
     , brushHeight = height * 0.1
     , mainHeight = height - brushHeight;
   // Max-min values
@@ -39,7 +39,7 @@ var createStringGraph = function(inData){
     .domain([0,5])
     .range([0,width]);
   var yCoordScale = d3.scale.linear()
-    .domain([0,4])
+    .domain([0,5])
     .range([0,mainHeight]);
 
   // Create Legend div
@@ -185,7 +185,6 @@ lowwerTicks.append("line")
       .attr("y", 10)
       .attr("fill","white")
       .text(inData[i][0].id);
-
   }
 
   var LegendRect = svgContainer.append("g")
@@ -211,7 +210,6 @@ lowwerTicks.append("line")
 
   function drawLines(drawData,i){
 
-    svgContainer.append("path")
     svgContainer.append("path")
       .attr("d", lineFunction(drawData))
       .attr("class", deviceClass[i])

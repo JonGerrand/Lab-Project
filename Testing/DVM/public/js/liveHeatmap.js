@@ -1,13 +1,12 @@
-// Initilise Websock
+  // Initilise Websock
   var Websocket = io();
-  Websocket.on('httpServer_msg', function(msg){
-    console.log(msg);
-  });
 
   // Scaling variables
   var x_pixle = $('#heatmapContainerWrapper').width();
   var y_pixel = $('#heatmapContainerWrapper').height();
   var ordContainer = {};
+  // Device name declaration
+  var deviceNameArray = ['',''];
 
 // --==Helper Functions==--
   // Create Tooltip
@@ -16,7 +15,7 @@
   // update function
   function updateToolTip(x,y,value){
     var transform = 'translate(' + (x + 15) + 'px, ' + (y + 15) + 'px)';
-    if(value === "iPhone"){
+    if(value === deviceNameArray[0]){
       tooltip1.style.MozTransform = transform; /* Firefox */
       tooltip1.style.msTransform = transform; /* IE (9+) - note ms is lowercase */
       tooltip1.style.OTransform = transform; /* Opera */
@@ -25,7 +24,7 @@
       tooltip1.innerHTML = value;
       tooltip1.style.display = 'block';
     }
-    if(value === "iPad"){
+    if(value === deviceNameArray[1]){
       tooltip2.style.MozTransform = transform; /* Firefox */
       tooltip2.style.msTransform = transform; /* IE (9+) - note ms is lowercase */
       tooltip2.style.OTransform = transform; /* Opera */
@@ -38,7 +37,7 @@
   // Scale received values
   function scaleOrds(x,y){
     var x_fixed = 5;
-    var y_fixed = 4;
+    var y_fixed = 5;
     var x_scaled = x/x_fixed;
     var y_scaled = y/y_fixed;
     var x_mapped = (x_scaled*x_pixle);
@@ -59,10 +58,17 @@
   var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
   Websocket.on('httpServer_ord', function(ord){
+    for (var i = 0; i < deviceNameArray.length; i++) {
+      if(($.inArray(ord.ID , deviceNameArray) === -1 ) && (deviceNameArray[i] === '')){
+        deviceNameArray[i] = ord.ID;
+      }
+    }
     ordContainer = scaleOrds(ord.x,ord.y);
     updateToolTip(ordContainer.x, ordContainer.y, ord.ID);
     heatmap.addData({ x: ordContainer.x, y: ordContainer.y , value: 0.1 });
   });
+
+  console.log($('#heatmapContainerWrapper').width());
 
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
     // we need preventDefault for the touchmove
@@ -76,9 +82,3 @@
   heatmapContainer.onmouseout = function(){
     tooltip2.style.display = 'none';
   };
-
-  // heatmapContainer.onclick = function(e) {
-  //   var x = e.layerX;
-  //   var y = e.layerY;
-  //   heatmap.addData({ x: x, y: y, value: 1 });
-  // };
