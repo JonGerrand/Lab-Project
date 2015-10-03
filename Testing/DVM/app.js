@@ -16,7 +16,7 @@ var socket_io = require('socket.io');
 var tcpSock = require('net');
 
 //SARM connection configuration
-var tcp_PORT = 4040;
+var tcp_PORT = 7000;
 var tcp_HOST = '192.168.1.11';
 
 //Routing Config for express
@@ -54,6 +54,9 @@ var StreamDataUnpacker = function(trackDevice){
   this.xPos = 0;
   this.yPos = 0;
   this.deviceID = "";
+  this.radius1 = 0;
+  this.radius2 = 0;
+  this.radius3 = 0;
   this.prevTimeStamp = new Date();
   this.timeStamp = new Date();
   this.unpackData = function(dataPoint){
@@ -71,9 +74,16 @@ var StreamDataUnpacker = function(trackDevice){
           this.yPos = unpackedString[2];
         }
         if(getType(unpackedString[3]) === 'string'){
-          var recvTime = parseFloat(unpackedString[3]);
-          this.prevTimeStamp = this.timeStamp;
-          this.timeStamp = getTimeStamp(recvTime);
+          this.timeStamp = parseFloat(unpackedString[3]);
+        }
+        if(getType(unpackedString[4]) === 'string'){
+          this.radius1 = unpackedString[4];
+        }
+        if(getType(unpackedString[5]) === 'string'){
+          this.radius2 = unpackedString[5];
+        }
+        if(getType(unpackedString[5]) === 'string'){
+          this.radius3 = unpackedString[5];
         }
         return true;
       } else {
@@ -95,10 +105,12 @@ var StreamDataUnpacker = function(trackDevice){
   this.getVelocity = function(){
     var xVel = 0;
     var yVel = 0;
-    var resVel = 0;
     xVel = (this.xPos-this.prevXPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     yVel = (this.yPos-this.prevYPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
+  }
+  this.getRadii = function(){
+    return [parseFloat(this.radius1),parseFloat(this.radius2),parseFloat(this.radius3)];
   }
 }
 var DataUnpackerArray = [];
@@ -124,6 +136,7 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
+      console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
@@ -147,6 +160,7 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
+// mongoose.connect('mongodb://192.168.1.11/EndToEnd_Atrium_1');
 mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
@@ -169,6 +183,9 @@ var webSock = socket_io();
 app.io = webSock;
 //--------------------------------------
 
+//----------Socket handling variables--------------
+//-------------------------------------------------
+
 //Websocket connection handling
 webSock.sockets.on("connection", function(socket){
   console.log("A socket connected!");
@@ -185,9 +202,10 @@ webSock.sockets.on("connection", function(socket){
     socket.emit("httpServer_msg", "Connected to HTTP Server");
     // Emit data to Websockets
     tcpClient.on('data', function(data){
-      console.log("Received Data: " + data);
+      // console.log("Received Data: " + data);
       if(data.search("SARM") === -1){
         // Assign data to correct device aggregator
+        console.log("Sink");
         for (var i = 0; i < DataUnpackerArray.length; i++) {
           if(DataUnpackerArray[i].unpackData(data) === true){
             // Packet format: [x,y,DevName]
@@ -196,12 +214,19 @@ webSock.sockets.on("connection", function(socket){
                                            ID:DataUnpackerArray[i].getDeviceID()});
             // Packet format: [ID, vel]
             socket.emit("httpServer_vel", {ID:DataUnpackerArray[i].getDeviceID(),
-                                          vel:DataUnpackerArray[i].getVelocity()});
-            // Packet format: [ID, areaStatus] : TODO
+                                           x:DataUnpackerArray[i].getXPos(),
+                                           y:DataUnpackerArray[i].getYPos(),
+                                           date: DataUnpackerArray[i].getTimeStamp()});
+
+            // Packet format: [ID, x, y]
             socket.emit("httpServer_stats", {ID:DataUnpackerArray[i].getDeviceID(),
-                                             areaStatus:1});
-            //socket.emit("httpServer_alert", data);
-            // socket.emit("httpServer_msg",DVMDataUnpacker.getXPos() + "," + DVMDataUnpacker.getYPos());
+                                             x:DataUnpackerArray[i].getXPos(),
+                                             y:DataUnpackerArray[i].getYPos()});
+            // Packet format : [x,y, Devname, [r1,r2,r3]]
+            socket.emit("httpServer_radii", {x:DataUnpackerArray[i].getXPos(),
+                                             y:DataUnpackerArray[i].getYPos(),
+                                             ID:DataUnpackerArray[i].getDeviceID(),
+                                             radii:DataUnpackerArray[i].getRadii()})
             }
           }
         }
@@ -212,7 +237,7 @@ webSock.sockets.on("connection", function(socket){
       tcpClient.destroy();
       });
     // Data handling from browser
-    socket.on('histHeatmap_query',function(data){
+    socket.on('Temporal_query',function(data){
       movementHistory.getDateRange(data.min,data.max,socket);
       // movementHistory.getPosition(data.min,data.max,data.min,data.max,socket);
       }); //Websocket received data

@@ -48,11 +48,10 @@ function playSound ( soundname ){
     thissound.play();
   }
 
-// Function implementation
-Websocket.on('httpServer_alert', function(msg){
-  console.log("Alert");
-  generateNotificationAlert('Success',msg);
+// Combined effect triggered on Zone intrusion
+function alertSequence(msg){
+  generateNotificationAlert('Danger',msg);
   setPanelAlert("on");
   setTimeout(function(){setPanelAlert("off")},2000);
   playSound("AlertTone");
-});
+}

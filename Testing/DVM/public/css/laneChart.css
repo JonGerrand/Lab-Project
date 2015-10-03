@@ -19,8 +19,14 @@
 	stroke-width: 1.5;
 }
 
-.axis line, .axis path {
-	stroke: black;
+.axis line{
+	stroke: rgb(21, 22, 20);
+	stroke-width: 2;
+	}
+
+.axis path {
+	stroke: rgb(21, 22, 20);
+	stroke-width: 2;
 }
 
 .miniItem {
@@ -33,8 +39,15 @@
 }
 
 .past {
-	stroke: green;
-	fill: lightgreen;
+	stroke: rgba(7, 7, 8, 0.74);
+}
+
+.dev1{
+	stroke: #209802;
+}
+
+.dev2{
+	stroke: #000b9e;
 }
 
 .brush .extent {
@@ -42,3 +55,21 @@
 	fill: blue;
 	fill-opacity: .165;
 }
+
+div.HistTooltip {
+	 position: absolute;
+	 width: auto;
+	 font-weight: bold;
+	 height: auto;
+	 opacity: 0.5;
+	 border: 3px solid #ffcc00;
+	 padding: 10px;
+	 background-color:rgba(255, 254, 161, 0.84);
+	 -webkit-border-radius: 10px;
+	 -moz-border-radius: 10px;
+	 border-radius: 10px;
+	 -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	 pointer-events: none;
+ }

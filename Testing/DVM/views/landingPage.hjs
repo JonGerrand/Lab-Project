@@ -43,7 +43,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand topnav" href="#">User Login</a>
+                <a class="navbar-brand topnav" href="main">User Login</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -124,7 +124,7 @@
                     <hr class="section-heading-spacer">
                     <div class="clearfix"></div>
                     <h2 class="section-heading">Visualisation:<br>Turning Data into Knowledge</h2>
-                    <p class="lead">By using powerful visualsation libraries such as <a target="_blank" href="http://d3js.org//">D3.js</a> and <a target="_blank" href="http://www.patrick-wied.at/static/heatmapjs/">Heatmap.js</a>, raw collected data within the system can be conveyed visually in a manner that is intuitive and informative</p>
+                    <p class="lead">By using powerful visualisation libraries such as <a target="_blank" href="http://d3js.org//">D3.js</a> and <a target="_blank" href="http://www.patrick-wied.at/static/heatmapjs/">Heatmap.js</a>, raw collected data within the system can be conveyed visually in a manner that is intuitive and informative</p>
                 </div>
                 <div class="col-lg-5 col-sm-pull-6  col-sm-6">
                     <img class="img-responsive" src="img/visualisation.jpg" alt="">
