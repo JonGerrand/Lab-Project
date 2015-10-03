@@ -1,18 +1,38 @@
 (function() {
 
 // Live stream data
-var dev1Data = 0;
-var dev2Data = 0;
-var dev1ID = "iPhone";
-var dev2ID = "iPad";
+var dev1Data = {prevX:0, prevY:0, currX:0, currY:0, prevDate: 0,
+                currDate: 0, xVel:0, yVel:0, vel: 0};
+var dev2Data = {prevX:0, prevY:0, currX:0, currY:0, prevDate: 0,
+                currDate: 0, xVel:0, yVel:0, vel: 0};
 
 Websocket.on('httpServer_vel',function(data){
-  if(dev1ID === data.ID) dev1Data = data.vel;
-  if(dev2ID === data.ID) dev2Data = data.vel;
+  if(deviceNameArray[0] === data.ID) {
+    dev1Data.prevX = dev1Data.currX;
+    dev1Data.prevY = dev1Data.currY;
+    dev1Data.prevDate = dev1Data.currDate;
+    dev1Data.currX = data.x;
+    dev1Data.currY = data.y;
+    dev1Data.currDate = data.date;
+    dev1Data.xVel = (dev1Data.currX - dev1Data.prevX)/((dev1Data.currDate - dev1Data.prevDate)*1e-3);
+    dev1Data.yVel = (dev1Data.currY - dev1Data.prevY)/((dev1Data.currDate - dev1Data.prevDate)*1e-3);
+    dev1Data.vel = Math.sqrt(Math.pow(dev1Data.xVel,2) + Math.pow(dev1Data.yVel,2));
+  }
+  if(deviceNameArray[1] === data.ID){
+    dev2Data.prevX = dev2Data.currX;
+    dev2Data.prevY = dev2Data.currY;
+    dev2Data.prevDate = dev2Data.currDate;
+    dev2Data.currX = data.x;
+    dev2Data.currY = data.y;
+    dev2Data.currDate = data.date;
+    dev2Data.xVel = (dev2Data.currX - dev2Data.prevX)/((dev2Data.currDate - dev2Data.prevDate)*1e-3);
+    dev2Data.yVel = (dev2Data.currY - dev2Data.prevY)/((dev2Data.currDate - dev2Data.prevDate)*1e-3);
+    dev2Data.vel = Math.sqrt(Math.pow(dev2Data.xVel,2) + Math.pow(dev2Data.yVel,2));
+  }
 });
 
-var n = 243,
-    duration = 200,
+var n = 200,
+    duration = 100,
     now = new Date(Date.now() - duration),
     count = 0,
     data1 = d3.range(n).map(function() { return 0; });
@@ -61,7 +81,7 @@ svg.append("text")
     .attr("y", height + margin.bottom -2)
     .attr("x", width/2)
     .attr("class", "axisText")
-    .text("Current Time (m:s)");
+    .text("Current Time (H:m) / (:s)");
 
 var axisY = svg.append("g")
     .attr("class", "y axis")
@@ -96,13 +116,14 @@ var transition = d3.select({}).transition()
     // update the domains
     now = new Date();
     x.domain([now - (n - 2) * duration, now - duration]);
-    y.domain([0, d3.max(data1)]);
+    var largestVal = [d3.max(data1),d3.max(data2)]
+    y.domain([0, d3.max(largestVal)]);
 
     // push the accumulated count onto the back, and reset the count
-    data1.push(dev1Data);
-    data2.push(dev2Data);
-    dev1Data = 0;
-    dev2Data = 0;
+    data1.push(dev1Data.vel);
+    data2.push(dev2Data.vel);
+    dev1Data.vel = 0;
+    dev2Data.vel = 0;
 
     // redraw the line
     svg.select(".line1")

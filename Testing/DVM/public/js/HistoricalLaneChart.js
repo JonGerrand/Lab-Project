@@ -1,6 +1,8 @@
 // Create websocket connection
 var Websocket = io();
 
+// TODO Remove constants
+
 // Configure Date-time Picker
 // Code referenced from: https://eonasdan.github.io/bootstrap-datetimepicker/
 $(function () {
@@ -20,7 +22,7 @@ $(function () {
    // Data is received in the form of a MapReduce Aggregation Result
    var performZoneClassification = function(data){
      var x_dim = 5;
-     var y_dim = 4;
+     var y_dim = 5;
      var zonedArray = [];
      // All zones are parallelograms
      var zone1 = {xMin:0, xMax:x_dim/2, yMin:0, yMax: y_dim/2};

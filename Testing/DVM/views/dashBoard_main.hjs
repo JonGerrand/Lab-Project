@@ -139,13 +139,9 @@
                 <!-- /.row -->
 
                 <!-- Alerts-->
-                <!-- These should be populated using jQuery-->
+                <!-- These are populated using jQuery-->
                 <div class="row">
                     <div class="col-lg-12" id="areaAlertMessage">
-                        <div class="alert alert-danger alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <i class="fa fa-info-circle"></i>  <strong>Warning!</strong> Unauthorized area entry
-                        </div>
                     </div>
                 </div>
                 <!-- /.row -->
@@ -197,7 +193,7 @@
                                   </thead>
                                   <tbody>
                                       <tr class="active" id="liveStat1">
-                                          <td>iPhone</td>
+                                          <td id="dev1Name">N/A</td>
                                           <td>
                                             <div class="progress">
                                               <div class="progress-bar progress-bar-dev1" role="progressbar" style="width: 100%;">
@@ -209,7 +205,7 @@
                                           <td id="dev1Feq">0</td>
                                       </tr>
                                       <tr class="active" id="liveStat2">
-                                          <td>iPad</td>
+                                          <td id="dev2Name">N/A</td>
                                           <td>
                                             <div class="progress">
                                               <div class="progress-bar progress-bar-dev2" role="progressbar" style="width: 100%;">
@@ -254,15 +250,14 @@
     <!-- D3.js Javascript -->
     <script src="js/d3.js"></script>
 
-    <!--  Heatmap Javascript -->
+    <!--  Live Updates -->
+    <script src='js/liveAlert.js'></script>
+
+    <!-- Visualisations -->
     <script src='js/heatmap.js'></script>
     <script src='js/liveHeatmap.js'></script>
     <script src='js/liveSpeedStream.js'></script>
     <script src='js/liveStats.js'></script>
-
-
-    <!--  Live Updates -->
-    <script src='js/liveAlert.js'></script>
 
 </body>
 

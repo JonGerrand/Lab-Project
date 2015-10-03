@@ -53,16 +53,20 @@
     radius: 10,
     blur: .90,
     // backgroundColor with alpha so you can see through it
-    backgroundColor: 'rgba(19, 122, 154, 0.12)'
+    backgroundColor: 'rgba(251, 252, 252, 0.12)'
   });
   var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
   Websocket.on('httpServer_ord', function(ord){
-    for (var i = 0; i < deviceNameArray.length; i++) {
-      if(($.inArray(ord.ID , deviceNameArray) === -1 ) && (deviceNameArray[i] === '')){
-        deviceNameArray[i] = ord.ID;
+    // Update tracked devices
+    if($.inArray(ord.ID , deviceNameArray) === -1 ){
+      if(deviceNameArray[0] === ''){
+        deviceNameArray[0] = ord.ID;
       }
-    }
+      else if(deviceNameArray[1] === ''){
+        deviceNameArray[1] = ord.ID;
+      }
+    }//if $.inArray(data.ID , deviceNameArray) === -1
     ordContainer = scaleOrds(ord.x,ord.y);
     updateToolTip(ordContainer.x, ordContainer.y, ord.ID);
     heatmap.addData({ x: ordContainer.x, y: ordContainer.y , value: 0.1 });
@@ -71,8 +75,6 @@
   console.log($('#heatmapContainerWrapper').width());
 
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
-    // we need preventDefault for the touchmove
-    // e.preventDefault();
     var x = e.layerX;
     var y = e.layerY;
     updateToolTip(x,y,"iPad");

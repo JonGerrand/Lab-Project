@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 7000;
-var tcp_HOST = '192.168.1.3';
+var tcp_HOST = '192.168.1.11';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -74,9 +74,7 @@ var StreamDataUnpacker = function(trackDevice){
           this.yPos = unpackedString[2];
         }
         if(getType(unpackedString[3]) === 'string'){
-          var recvTime = parseFloat(unpackedString[3]);
-          this.prevTimeStamp = this.timeStamp;
-          this.timeStamp = getTimeStamp(recvTime);
+          this.timeStamp = parseFloat(unpackedString[3]);
         }
         if(getType(unpackedString[4]) === 'string'){
           this.radius1 = unpackedString[4];
@@ -107,7 +105,6 @@ var StreamDataUnpacker = function(trackDevice){
   this.getVelocity = function(){
     var xVel = 0;
     var yVel = 0;
-    var resVel = 0;
     xVel = (this.xPos-this.prevXPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     yVel = (this.yPos-this.prevYPos)/((this.timeStamp-this.prevTimeStamp)*1e-3);
     return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
@@ -163,8 +160,8 @@ var MovementRecord = function(model){
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/EndToEnd_Atrium_1');
-// mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+// mongoose.connect('mongodb://192.168.1.11/EndToEnd_Atrium_1');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -186,10 +183,8 @@ var webSock = socket_io();
 app.io = webSock;
 //--------------------------------------
 
-//-----------General Variables----------
-  var Device1ID = "";
-  var Device2ID = "";
-//--------------------------------------
+//----------Socket handling variables--------------
+//-------------------------------------------------
 
 //Websocket connection handling
 webSock.sockets.on("connection", function(socket){
@@ -207,9 +202,10 @@ webSock.sockets.on("connection", function(socket){
     socket.emit("httpServer_msg", "Connected to HTTP Server");
     // Emit data to Websockets
     tcpClient.on('data', function(data){
-      console.log("Received Data: " + data);
+      // console.log("Received Data: " + data);
       if(data.search("SARM") === -1){
         // Assign data to correct device aggregator
+        console.log("Sink");
         for (var i = 0; i < DataUnpackerArray.length; i++) {
           if(DataUnpackerArray[i].unpackData(data) === true){
             // Packet format: [x,y,DevName]
@@ -218,16 +214,19 @@ webSock.sockets.on("connection", function(socket){
                                            ID:DataUnpackerArray[i].getDeviceID()});
             // Packet format: [ID, vel]
             socket.emit("httpServer_vel", {ID:DataUnpackerArray[i].getDeviceID(),
-                                          vel:DataUnpackerArray[i].getVelocity()});
-            // Packet format: [ID, areaStatus] : TODO
+                                           x:DataUnpackerArray[i].getXPos(),
+                                           y:DataUnpackerArray[i].getYPos(),
+                                           date: DataUnpackerArray[i].getTimeStamp()});
+
+            // Packet format: [ID, x, y]
             socket.emit("httpServer_stats", {ID:DataUnpackerArray[i].getDeviceID(),
-                                             areaStatus:1});
+                                             x:DataUnpackerArray[i].getXPos(),
+                                             y:DataUnpackerArray[i].getYPos()});
             // Packet format : [x,y, Devname, [r1,r2,r3]]
             socket.emit("httpServer_radii", {x:DataUnpackerArray[i].getXPos(),
                                              y:DataUnpackerArray[i].getYPos(),
                                              ID:DataUnpackerArray[i].getDeviceID(),
                                              radii:DataUnpackerArray[i].getRadii()})
-            //socket.emit("httpServer_alert", data);
             }
           }
         }

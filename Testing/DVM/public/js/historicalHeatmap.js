@@ -32,7 +32,7 @@ var y_pixel = $('#heatmapContainerWrapper').height();
 var ords = {};
 function scaleOrds(x,y){
   var x_fixed = 5;
-  var y_fixed = 4;
+  var y_fixed = 5;
   var x_scaled = x/x_fixed;
   var y_scaled = y/y_fixed;
   var x_mapped = (x_scaled*x_pixle);
@@ -50,7 +50,7 @@ var heatmap = h337.create({
   radius: 10,
   blur: .90,
   // backgroundColor with alpha so you can see through it
-  backgroundColor: 'rgba(19, 122, 154, 0.12)'
+  backgroundColor: 'rgba(251, 252, 252, 0.12)'
 });
 var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
