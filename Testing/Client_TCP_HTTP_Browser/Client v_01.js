@@ -7,6 +7,7 @@ var net = require('net');
 var client = new net.Socket();
 client.setKeepAlive(true);
 var xData = 0;
+var device = "";
 var genRandomNum = function(min,max){
   return (Math.random() * max) + min;
 }
@@ -14,22 +15,18 @@ var genRandomNum = function(min,max){
 var sendArray = "DeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
 console.log(sendArray);
 
-client.connect(4040, '192.168.1.3', function(){
+client.connect(7000, '192.168.1.11', function(){
   console.log('Connected to remote Server');
 
   setInterval(function(){
     console.log('Streaming Data: ' + xData);
     xData = xData +1;
-    client.write("iPhone," + genRandomNum(0,5) + "," + genRandomNum(0,4) + "," +
-                (1442404311.781545+xData).toString());
-  },30);
-
-  setInterval(function(){
-    console.log('Streaming Data: ' + xData);
-    xData = xData +1;
-    client.write("iPad," + genRandomNum(0,5) + "," + genRandomNum(0,4) + "," +
-                (1442404311.781545+xData).toString());
-  },30);
+    if(genRandomNum(0,1) > 0.5){device = "iPhone";}
+    else{device = "iPad"};
+    client.write( device + "," + (genRandomNum(0,5)-genRandomNum(0,0)) + "," + (genRandomNum(0,5)-genRandomNum(0,0)) + "," +
+                (1442404311.781545+xData).toString() + "," + genRandomNum(0,3) +
+                "," + genRandomNum(0,3) + "," + genRandomNum(0,3));
+  },50);
 
   // rl.prompt();
   // rl.on('line', function(line){

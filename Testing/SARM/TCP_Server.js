@@ -9,8 +9,8 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.3';
-var PORT = 4040;
+var HOST = '192.168.1.11';
+var PORT = 7000;
 sinkList = [];
 var replicated = 0;
 
@@ -124,28 +124,45 @@ function DataUnpacker(){
   this.xPos = 0;
   this.yPos = 0;
   this.deviceID = 0;
+  this.radius1 = 0;
+  this.radius2 = 0;
+  this.radius3 = 0;
+
   this.unpackData = function(dataPoint){
     var separatedData = dataPoint.split(",");
     // Data assignment
     this.deviceID = separatedData[0];
-    if(getType(this.deviceID) != 'string'){
+    if(getType(this.deviceID) !== 'string'){
       throw new DataUnpackerException('Invalid Device ID');
     }
     this.xPos = parseFloat(separatedData[1]);
-    if((getType(this.xPos) != 'number')){
+    if((getType(this.xPos) !== 'number')){
       throw new DataUnpackerException('Invalid x-Coordinate');
     }
     this.yPos = parseFloat(separatedData[2]);
-    if((getType(this.yPos) != 'number')){
+    if((getType(this.yPos) !== 'number')){
       throw new DataUnpackerException('Invalid y-Coordinate');
     }
     this.timeStamp = convertMsToTimestamp(separatedData[3]);
-    if(getType(this.timeStamp) != 'date'){
+    if(getType(this.timeStamp) !== 'date'){
       throw new DataUnpackerException('Invalid TimeStamp');
+    }
+    this.radius1 = parseFloat(separatedData[4]);
+    if((getType(this.radius1) !== 'number')){
+      throw new DataUnpackerException('Invalid Radius Value')
+    }
+    this.radius2 = parseFloat(separatedData[5]);
+    if((getType(this.radius2) !== 'number')){
+      throw new DataUnpackerException('Invalid Radius Value')
+    }
+    this.radius3 = parseFloat(separatedData[6]);
+    if((getType(this.radius3) !== 'number')){
+      throw new DataUnpackerException('Invalid Radius Value')
     }
   };
   this.outputDVMData = function(){
-    return this.deviceID + "," + this.xPos + "," + this.yPos + "," + this.timeStamp.getTime();
+    return this.deviceID + "," + this.xPos + "," + this.yPos + "," + this.timeStamp.getTime() +
+           "," + this.radius1 + "," + this.radius2 + "," + this.radius3;
   }
   this.outputDSMData = function(){
     return {"DeviceID":this.deviceID,"xPos":this.xPos, "yPos":this.yPos,
@@ -154,9 +171,13 @@ function DataUnpacker(){
 }
 //-----------------------------------
 
+//----====Unique Device Handling====----
+//--------------------------------------
+
 
 //-==Establish MongoBD connection==-
-mongoose.connect('mongodb://192.168.1.3/EndToEndOne_1');
+// mongoose.connect('mongodb://192.168.1.3/EndToEnd_Atrium_1');
+mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -166,12 +187,7 @@ var mPointSchema = new mongoose.Schema({
   yPos: Number,
   TimeStamp: {type:Date, default: Date.now}
 })
-// Define Schema methods Ref: http://mongoosejs.com/docs/index.html
-// mPointSchema.methods.streamString = function(){
-//   var resp = "{" + this.deviceID + "," + this.xPos + "," + this.yPos +
-//                   this.timeStamp +"}";
-//   return resp;
-// }
+
 // Define Model
 var mPoint = mongoose.model('mPoint', mPointSchema);
 // Define SARM Aggregator
@@ -208,7 +224,7 @@ TCPserver.on('connection', function(sock){
       for (var i = 0; i < sinkList.length; i++) {
         sinkList[i].write(streamUnpacker.outputDVMData());
         dsmAggregator.pushDataPoint(streamUnpacker.outputDSMData());
-        console.log(streamUnpacker.outputDSMData());
+        console.log(streamUnpacker.outputDVMData());
       }
     }
     // Agent type-definition
@@ -225,6 +241,7 @@ TCPserver.on('connection', function(sock){
         sock.write("SARM CONNECTION ESTABLISHED");
         //Add to Sink list
         sinkList.push(sock);
+        console.log("Sink Count: " + sinkList.length);
       }
     } //Agent type-definition
     //TODO Aggregation functions
@@ -232,30 +249,33 @@ TCPserver.on('connection', function(sock){
 
   //-==Error and Exit Handling==-
   sock.on('error', function(error){
-    // Determine if Sink was disconnected
-    var remove = 0;
-    for (var i = 0; i < sinkList.length; i++) {
-      if(sinkList[i].remoteAddress === sock.remoteAddress){
-        remove = 1;
+      var sockIndex = sinkList.indexOf(sock);
+      if(sockIndex !== -1){
+        sinkList.splice(sockIndex,1);
       }
-    }
-    if(remove != 0){
-      sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
-      console.log("A Sink has been disconnected");
-    }
+      console.log("An Error occured - Sink/Source disconnected");
+      console.log("Sink Count: " + sinkList.length);
+
   });//Error Handling
   sock.on('close', function(error){
     // Determine if Sink was disconnected
-    var remove = 0;
-    for (var i = 0; i < sinkList.length; i++) {
-      if(sinkList[i].remoteAddress === sock.remoteAddress){
-        remove = 1;
-      }
+    // var remove = 0;
+    // for (var i = 0; i < sinkList.length; i++) {
+    //   if(sinkList[i].remoteAddress === sock.remoteAddress){
+    //     remove = 1;
+    //   }
+    // }
+    // if(remove != 0){
+    //   sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
+    //   console.log("A Sink has been disconnected gracefully");
+    //   console.log("Sink Count: " + sinkList.length);
+    // }
+    var sockIndex = sinkList.indexOf(sock);
+    if(sockIndex !== -1){
+      sinkList.splice(sockIndex,1);
     }
-    if(remove != 0){
-      sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
-      console.log("A Sink has been disconnected");
-    }
+    console.log("Source/Sink disconnected gracefully");
+    console.log("Sink Count: " + sinkList.length);
   });//Exit Handling
 
 }).listen(PORT, HOST); //SARM event definitions
