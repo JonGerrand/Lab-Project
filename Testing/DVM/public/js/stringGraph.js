@@ -18,9 +18,9 @@ var createStringGraph = function(inData){
   var deviceClass = ["dev1","dev2"];
   var minDate = d3.min(inData[0], function(d){return d.date;}); //Initial estimate
   var maxDate = d3.max(inData[0], function(d){return d.date;}); //Initial estimate
-  var margin = {top: 10, right: 20, bottom: 10, left: 20}
+  var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = $('#stringVis').width() - margin.left - margin.right
-    , height = $('#stringVis').width() - margin.top - margin.bottom
+    , height = $('#stringVis').height() - margin.top - margin.bottom
     , brushHeight = height * 0.1
     , mainHeight = height - brushHeight;
   // Max-min values
@@ -36,10 +36,10 @@ var createStringGraph = function(inData){
     .domain([d3.time.second(minDate), d3.time.second(maxDate)])
     .range([0,width]);
   var xCoordScale = d3.scale.linear()
-    .domain([0,5])
+    .domain([-15,15])
     .range([0,width]);
   var yCoordScale = d3.scale.linear()
-    .domain([0,5])
+    .domain([-15,15])
     .range([0,mainHeight]);
 
   // Create Legend div
@@ -49,18 +49,18 @@ var createStringGraph = function(inData){
       .attr("x", 10)
       .attr("y", 10);
 
- //The SVG Container
+ //The Main SVG Container
  var svgContainer = d3.select("#stringVis")
      .append("svg")
-     .attr("width", width + margin.left)
+     .attr("width", width + margin.left + margin.right)
      .attr("height", height + margin.top + margin.bottom);
 
-// Create opaque background
- var backgroundFade = svgContainer.append("rect")
-      .attr("width", width + margin.right + margin.left)
-      .attr("height", height)
-      .attr("fill","grey")
-      .attr("fill-opacity",0.5);
+//The Brush SVG Container
+var brushContainer = d3.select("#stringBrush")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", brushHeight);
+
 
  // Create filter element for string graph
  var defs = svgContainer.append("defs");
@@ -88,7 +88,7 @@ var createStringGraph = function(inData){
  var upxDateAxis = d3.svg.axis()
      .scale(x)
      .orient("top")
-    .ticks(d3.time.minutes, upSpacing)
+     .ticks(d3.time.minutes, upSpacing)
      .tickFormat(d3.time.format("%a %e - %H:%M"))
      .tickSize(6, 0, 0);
 
@@ -113,9 +113,9 @@ var legendlineFunction = d3.svg.line()
      .interpolate("linear");
 
  //create data brush
- var brushArea = svgContainer.append("g")
-      .attr("transform", "translate(" + (margin.left/2) + "," + mainHeight + ")")
-      .attr("width", width)
+ var brushArea = brushContainer.append("g")
+      .attr("transform", "translate(" + 0 + "," + 0 + ")")
+      .attr("width", (width + margin.left + margin.right) )
       .attr("height", brushHeight);
 
  //Append Upper x-axis
@@ -127,7 +127,7 @@ var legendlineFunction = d3.svg.line()
  upperTicks.append("line")
       .attr("x1", 0)
       .attr("y1", 0)
-      .attr("x2", width)
+      .attr("x2", (width + margin.left + margin.right))
       .attr("y2", 0)
       .attr("class", "axis date")
 
@@ -140,13 +140,13 @@ var lowwerTicks = brushArea.append("g")
 lowwerTicks.append("line")
      .attr("x1", 0)
      .attr("y1", 0)
-     .attr("x2", width)
+     .attr("x2", (width + margin.left + margin.right))
      .attr("y2", 0)
      .attr("class", "axis date")
 
  brushArea.append("rect")
       .attr("pointer-events", "painted")
-      .attr("width", width)
+      .attr("width", (width + margin.left + margin.right))
       .attr("height", brushHeight)
       .attr("visibility", "hidden");
 
@@ -195,6 +195,8 @@ lowwerTicks.append("line")
  function displayLines(){
    var minExtent = d3.time.second(brush.extent()[0]);
    var maxExtent = d3.time.second(brush.extent()[1]);
+   console.log("Min val: " + minExtent);
+   console.log("Max val: " + maxExtent);
    // Remove previous graphs
    svgContainer.selectAll("path").remove();
 

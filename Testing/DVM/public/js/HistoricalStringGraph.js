@@ -47,8 +47,8 @@ $('#TrialButton').click(function(){
 
 // Receive Temporal data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
-  var dev1Name = "iPhone";
-  var dev2Name = "iPad";
+  var dev1Name = "~iPhone";
+  var dev2Name = "~iPad";
   var dev1Data = [];
   var dev2Data = [];
   var stringGraphData = [];
@@ -65,9 +65,10 @@ Websocket.on('httpServer_histOrd',function(histOrds){
   // Push resultant data to vis object
   stringGraphData.push(dev1Data);
   stringGraphData.push(dev2Data);
-  console.log(stringGraphData);
+  console.log(stringGraphData[0]);
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";
   $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");
-  d3.select("svg").remove();
+  d3.select("#stringVis").html("");
+  d3.select("#stringBrush").html("");
   createStringGraph(stringGraphData);
 });

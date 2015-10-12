@@ -28,9 +28,14 @@
 
 #stringVis{
   width: auto;
-  height: auto;
-  background: url(../img/perimeter.png) no-repeat;
+	height: 1100px;
+	background: url(../img/Background_grid_string.png) no-repeat;
   background-size: 100% 100%;
+}
+
+#stringBrush{
+  width: auto;
+  height: auto;
 }
 
 div.StringTooltip {

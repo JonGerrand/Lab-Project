@@ -83,7 +83,7 @@ $(function () {
      var currentLaneDev2 = "";
      // create lane items
      for (var i = 0; i < zonedData.length; i++) {
-       if(zonedData[i].ID === "iPhone"){
+       if(zonedData[i].ID === "~iPhone"){
          if(zonedData[i].zone !== currentLaneDev1){
            if(i === 0){
              // Format new entry
@@ -113,7 +113,7 @@ $(function () {
            }//else
          }//if zonedData[i].zone !== currentLaneDev1
        }//if iPhone
-       if(zonedData[i].ID === "iPad"){
+       if(zonedData[i].ID === "~iPad"){
          if(i === 0){
            // Format new entry
            name2 = zonedData[0].ID;

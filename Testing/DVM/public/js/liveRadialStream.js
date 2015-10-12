@@ -4,32 +4,76 @@
   var Websocket = io();
 
   // Define chart Variables
-  var margin = {top: 0, right: 20, bottom: 0, left: 10}
+  // var margin = {top: 0, right: 20, bottom: 0, left: 10}
+  //   , width = $('#radialChart').width() - margin.left - margin.right
+  //   , height = $('#radialChart').width() - margin.top - margin.bottom;
+
+  var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = $('#radialChart').width() - margin.left - margin.right
     , height = $('#radialChart').width() - margin.top - margin.bottom;
 
   // Initilise Radial scales
+  var radialxScale  = d3.scale.linear()
+        .domain([-5,10])
+        .range([0,width]);
+
+  var radialyScale = d3.scale.linear()
+        .domain([-5,10])
+        .range([0,height]);
+
   var radialScale  = d3.scale.linear()
-        .domain([0,5])
+        .domain([0,15])
         .range([0,width]);
 
   // Define used devices
   var deviceNameArray = ['',''];
 
-  var node1Pos = {x:radialScale(0),y:radialScale(0)}
-    , node2Pos = {x:radialScale(5),y:radialScale(0)}
-    , node3Pos = {x:radialScale(2.5),y:radialScale(4.33)};
+  // var node1Pos = {x:radialxScale(0),y:radialyScale(0)}
+  //   , node2Pos = {x:radialxScale(7),y:radialyScale(0)}
+  //   , node3Pos = {x:radialxScale(3.5),y:radialyScale(6.06)}
+  //   , node4Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
+  //   , node5Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
+  //   , node6Pos = {x:radialxScale(3.5),y:radialyScale(2.03)}
+  //   , node7Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
+  //   , node8Pos = {x:radialxScale(4.5),y:radialyScale(3.03)}
+  //   , node9Pos = {x:radialxScale(2.5),y:radialyScale(3.03)}
+  //   , node10Pos = {x:radialxScale(3.5),y:radialyScale(4.03)}
+  //   , node11Pos = {x:radialxScale(-1.5),y:radialyScale(3.03)}
+  //   , node12Pos = {x:radialxScale(8.5),y:radialyScale(3.03)};
+
+  var node1Pos = {x:radialxScale(0),y:radialyScale(0)}
+    , node2Pos = {x:radialxScale(5),y:radialyScale(0)}
+    , node3Pos = {x:radialxScale(2.5),y:radialyScale(4.33)}
+    , node4Pos = {x:radialxScale(2.5),y:radialyScale(2.165)}
+    , node5Pos = {x:radialxScale(-2.5),y:radialyScale(2.165)}
+    , node6Pos = {x:radialxScale(7.5),y:radialyScale(2.165)};
+    // , node7Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
+    // , node8Pos = {x:radialxScale(4.5),y:radialyScale(3.03)}
+    // , node9Pos = {x:radialxScale(2.5),y:radialyScale(3.03)}
+    // , node10Pos = {x:radialxScale(3.5),y:radialyScale(4.03)}
+    // , node11Pos = {x:radialxScale(-1.5),y:radialyScale(3.03)}
+    // , node12Pos = {x:radialxScale(8.5),y:radialyScale(3.03)};
 
   // Testing Data
   var receivedData1 = [
     {"x": node1Pos.x, "y": node1Pos.y , "radius": radialScale(0.1), "color": "blue"},
     {"x": node2Pos.x, "y": node2Pos.y , "radius": radialScale(0.1), "color": "blue"},
-    {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(0.1), "color": "blue"}
+    {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(0.1), "color": "blue"},
+    {"x": node4Pos.x, "y": node4Pos.y , "radius": radialScale(0.1), "color": "red"},
+    {"x": node5Pos.x, "y": node5Pos.y , "radius": radialScale(0.1), "color": "red"},
+    {"x": node6Pos.x, "y": node6Pos.y , "radius": radialScale(0.1), "color": "red"}
+    // {"x": node7Pos.x, "y": node7Pos.y , "radius": radialScale(0.1), "color": "red"},
+    // {"x": node8Pos.x, "y": node8Pos.y , "radius": radialScale(0.1), "color": "red"},
+    // {"x": node9Pos.x, "y": node9Pos.y , "radius": radialScale(0.1), "color": "red"},
+    // {"x": node10Pos.x, "y": node10Pos.y , "radius": radialScale(0.1), "color": "red"},
+    // {"x": node11Pos.x, "y": node11Pos.y , "radius": radialScale(0.1), "color": "red"},
+    // {"x": node12Pos.x, "y": node12Pos.y , "radius": radialScale(0.1), "color": "red"}
   ];
   var receivedData2 = [
     {"x": node1Pos.x, "y": node1Pos.y , "radius": radialScale(0.1), "color": "green"},
     {"x": node2Pos.x, "y": node2Pos.y , "radius": radialScale(0.1), "color": "green"},
-    {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(0.1), "color": "green"}
+    {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(0.1), "color": "green"},
+    {"x": node4Pos.x, "y": node4Pos.y , "radius": radialScale(0.1), "color": "red"}
   ];
 
   // Create chart body
@@ -38,11 +82,6 @@
         .append('svg')
         .attr('width', width)
         .attr('height', height);
-
-  // Initilise Radial scales
-  var radialScale  = d3.scale.linear()
-        .domain([0,5])
-        .range([0,width]);
 
   // Create circles
   drawCircles([receivedData1,receivedData2])
@@ -64,7 +103,18 @@
           {"x": node1Pos.x, "y": node1Pos.y , "radius": radialScale(data.radii[0]), "color": "blue"},
           {"x": node2Pos.x, "y": node2Pos.y , "radius": radialScale(data.radii[1]), "color": "blue"},
           {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(data.radii[2]), "color": "blue"},
-          {"x": radialScale(data.x), "y": radialScale(data.y) , "radius": 20, "color": "black"}
+          {"x": node4Pos.x, "y": node4Pos.y , "radius": radialScale(0.1), "color": "red"},
+          {"x": node4Pos.x, "y": node4Pos.y , "radius": radialScale(0.1), "color": "red"},
+          {"x": node5Pos.x, "y": node5Pos.y , "radius": radialScale(0.1), "color": "red"},
+          {"x": node6Pos.x, "y": node6Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node7Pos.x, "y": node7Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node8Pos.x, "y": node8Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node9Pos.x, "y": node9Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node10Pos.x, "y": node10Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node11Pos.x, "y": node11Pos.y , "radius": radialScale(0.1), "color": "red"},
+          // {"x": node12Pos.x, "y": node12Pos.y , "radius": radialScale(0.1), "color": "red"},
+          {"x": radialxScale(data.x), "y": radialyScale(data.y) , "radius": 20, "color": "black"}
+
         ];
       }
       if(data.ID === deviceNameArray[1]){
@@ -72,7 +122,8 @@
           {"x": node1Pos.x, "y": node1Pos.y , "radius": radialScale(data.radii[0]), "color": "green"},
           {"x": node2Pos.x, "y": node2Pos.y , "radius": radialScale(data.radii[1]), "color": "green"},
           {"x": node3Pos.x, "y": node3Pos.y , "radius": radialScale(data.radii[2]), "color": "green"},
-          {"x": radialScale(data.x), "y": radialScale(data.y) , "radius": 20, "color": "black"}
+          {"x": node4Pos.x, "y": node4Pos.y , "radius": radialScale(0.1), "color": "red"},
+          {"x": radialxScale(data.x), "y": radialyScale(data.y) , "radius": 20, "color": "black"}
         ];
       }
       // Clear previous circles
@@ -83,8 +134,8 @@
       // Append device labels
       svgContainer.append("g")
         .append("text")
-        .attr("x", radialScale(data.x) + 20)
-        .attr("y", radialScale(data.y) + 20)
+        .attr("x", radialxScale(data.x) + 20)
+        .attr("y", radialyScale(data.y) + 20)
         .text(data.ID);
     })
 
