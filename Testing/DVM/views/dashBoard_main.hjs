@@ -209,7 +209,7 @@
     <!-- /#wrapper -->
 
     <!-- On page content -->
-    <audio src="audio/siren.wav" id="AlertTone" autostart="false"></audio>
+    <audio src="audio/intruder.wav" id="AlertTone" autostart="false"></audio>
 
     <!--  ****SCRIPTS***  -->
 

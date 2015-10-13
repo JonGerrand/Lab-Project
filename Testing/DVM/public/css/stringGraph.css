@@ -1,13 +1,13 @@
 .dev1{
-  stroke: green;
+  stroke: rgb(0, 158, 115);
 }
 
 .dev2{
-  stroke: blue;
+  stroke: rgb(86, 180, 233);
 }
 
 .active{
-  stroke: yellow;
+  stroke: rgb(167, 23, 103);
 }
 
 .brush .extent {
@@ -28,8 +28,8 @@
 
 #stringVis{
   width: auto;
-	height: 1100px;
-	background: url(../img/Background_grid_string.png) no-repeat;
+	height: 800px;
+  background: url(../img/Background_grid_plain.png) no-repeat;
   background-size: 100% 100%;
 }
 

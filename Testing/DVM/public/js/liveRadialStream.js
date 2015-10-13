@@ -4,10 +4,6 @@
   var Websocket = io();
 
   // Define chart Variables
-  // var margin = {top: 0, right: 20, bottom: 0, left: 10}
-  //   , width = $('#radialChart').width() - margin.left - margin.right
-  //   , height = $('#radialChart').width() - margin.top - margin.bottom;
-
   var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = $('#radialChart').width() - margin.left - margin.right
     , height = $('#radialChart').width() - margin.top - margin.bottom;
@@ -28,31 +24,12 @@
   // Define used devices
   var deviceNameArray = ['',''];
 
-  // var node1Pos = {x:radialxScale(0),y:radialyScale(0)}
-  //   , node2Pos = {x:radialxScale(7),y:radialyScale(0)}
-  //   , node3Pos = {x:radialxScale(3.5),y:radialyScale(6.06)}
-  //   , node4Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
-  //   , node5Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
-  //   , node6Pos = {x:radialxScale(3.5),y:radialyScale(2.03)}
-  //   , node7Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
-  //   , node8Pos = {x:radialxScale(4.5),y:radialyScale(3.03)}
-  //   , node9Pos = {x:radialxScale(2.5),y:radialyScale(3.03)}
-  //   , node10Pos = {x:radialxScale(3.5),y:radialyScale(4.03)}
-  //   , node11Pos = {x:radialxScale(-1.5),y:radialyScale(3.03)}
-  //   , node12Pos = {x:radialxScale(8.5),y:radialyScale(3.03)};
-
   var node1Pos = {x:radialxScale(0),y:radialyScale(0)}
     , node2Pos = {x:radialxScale(5),y:radialyScale(0)}
     , node3Pos = {x:radialxScale(2.5),y:radialyScale(4.33)}
     , node4Pos = {x:radialxScale(2.5),y:radialyScale(2.165)}
     , node5Pos = {x:radialxScale(-2.5),y:radialyScale(2.165)}
     , node6Pos = {x:radialxScale(7.5),y:radialyScale(2.165)};
-    // , node7Pos = {x:radialxScale(3.5),y:radialyScale(3.03)}
-    // , node8Pos = {x:radialxScale(4.5),y:radialyScale(3.03)}
-    // , node9Pos = {x:radialxScale(2.5),y:radialyScale(3.03)}
-    // , node10Pos = {x:radialxScale(3.5),y:radialyScale(4.03)}
-    // , node11Pos = {x:radialxScale(-1.5),y:radialyScale(3.03)}
-    // , node12Pos = {x:radialxScale(8.5),y:radialyScale(3.03)};
 
   // Testing Data
   var receivedData1 = [

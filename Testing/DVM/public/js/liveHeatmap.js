@@ -84,7 +84,7 @@
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
     var x = e.layerX;
     var y = e.layerY;
-    updateToolTip(x,y,"iPad");
+    updateToolTip(x,y,"~iPhone");
     heatmap.addData({ x: x, y: y, value: 0.1 });
   };
 

@@ -36,10 +36,10 @@ var createStringGraph = function(inData){
     .domain([d3.time.second(minDate), d3.time.second(maxDate)])
     .range([0,width]);
   var xCoordScale = d3.scale.linear()
-    .domain([-15,15])
+    .domain([-5,10])
     .range([0,width]);
   var yCoordScale = d3.scale.linear()
-    .domain([-15,15])
+    .domain([-5,10])
     .range([0,mainHeight]);
 
   // Create Legend div
@@ -104,7 +104,7 @@ var brushContainer = d3.select("#stringBrush")
  var lineFunction = d3.svg.line()
       .x(function(d) { return xCoordScale(d.x); })
       .y(function(d) { return yCoordScale(d.y); })
-      .interpolate("linear");
+      .interpolate("basis");
 
 // Legend Line creation
 var legendlineFunction = d3.svg.line()
@@ -195,8 +195,8 @@ lowwerTicks.append("line")
  function displayLines(){
    var minExtent = d3.time.second(brush.extent()[0]);
    var maxExtent = d3.time.second(brush.extent()[1]);
-   console.log("Min val: " + minExtent);
-   console.log("Max val: " + maxExtent);
+  //  console.log("Min val: " + minExtent);
+  //  console.log("Max val: " + maxExtent);
    // Remove previous graphs
    svgContainer.selectAll("path").remove();
 
@@ -215,7 +215,7 @@ lowwerTicks.append("line")
     svgContainer.append("path")
       .attr("d", lineFunction(drawData))
       .attr("class", deviceClass[i])
-      .attr("stroke-width", 2)
+      .attr("stroke-width", 5)
       .attr("fill", "none")
       .on("mouseover", function(){
         d3.select(this)
@@ -237,7 +237,7 @@ lowwerTicks.append("line")
     }
 
   function getUpTickSpacing(){
-    if(x.domain()[1] - x.domain()[0] > 3010000){
+    if(x.domain()[1] - x.domain()[0] > 10010000){
       return 40;
     }
     if(x.domain()[1] - x.domain()[0] > 786000){
@@ -246,11 +246,11 @@ lowwerTicks.append("line")
     if(x.domain()[1] - x.domain()[0] > 550000){
       return 10;
     }
-    else return 5;
+    else return 1;
   }//getUpTickSpacing
 
     function getLowTickSpacing(){
-      if(x.domain()[1] - x.domain()[0] > 3010000){
+      if(x.domain()[1] - x.domain()[0] > 10010000){
         return 10;
       }
       if(x.domain()[1] - x.domain()[0] > 786000){
@@ -259,7 +259,7 @@ lowwerTicks.append("line")
       if(x.domain()[1] - x.domain()[0] > 550000){
         return 2;
       }
-      else return 1;
+      else return 0.1;
     }//getLowTickSpacing
 
 } //createStringGraph

@@ -5,7 +5,7 @@
 
 #heatmapContainerWrapper{
 	width: auto;
-	height: 1100px;
+	height: 800px;
 	background: url(../img/Background_grid.png) no-repeat;
   background-size: 100% 100%;
 }
@@ -14,9 +14,9 @@
   position:absolute;
   left:0;
   top:0;
-  background:rgba(32, 152, 2, 0.8);
+  background:rgba(0, 158, 115,0.8);
   color:white;
-  font-size:14px;
+  font-size:20px;
   padding:5px;
   line-height:18px;
   display:none;
@@ -26,9 +26,9 @@
   position:absolute;
   left:0;
   top:0;
-  background:rgba(0, 11, 158, 0.8);
+  background:rgba(0, 114, 178,0.8);
   color:white;
-  font-size:14px;
+  font-size:20px;
   padding:5px;
   line-height:18px;
   display:none;

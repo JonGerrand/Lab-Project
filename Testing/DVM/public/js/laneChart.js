@@ -276,7 +276,7 @@ var createLaneChart = function(inData){
 
 		  .on("mouseout", function(d){
    			            div.transition()
-                    .duration(100)
+                    .duration(1000)
                     .style("opacity", 0); d3.select(this).classed("highlight",false);
    			 });;
 

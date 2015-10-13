@@ -28,14 +28,15 @@ function isValidDate(date){
 // Scaling variables
 var x_pixle = $('#heatmapContainerWrapper').width();
 var y_pixel = $('#heatmapContainerWrapper').height();
+console.log(x_pixle);
 
 // Define heatmap scales
 var heatXscale = d3.scale.linear()
-    .domain([-15,15])
+    .domain([-5,10])
     .range([0, x_pixle]);
 
 var heatYscale = d3.scale.linear()
-    .domain([-15,15])
+    .domain([-5,10])
     .range([0, y_pixel]);
 
 // Scale received values
@@ -199,7 +200,7 @@ function createTimeBrush(inData){
 var heatmap = h337.create({
   container: document.getElementById('heatmapContainer'),
   maxOpacity: .6,
-  radius: 10,
+  radius: 20,
   blur: .90,
   // backgroundColor with alpha so you can see through it
   backgroundColor: 'rgba(251, 252, 252, 0.12)'
@@ -225,8 +226,8 @@ $('#TrialButton').click(function(){
 Websocket.on('httpServer_histOrd',function(histOrds){
   var histPoints = [];
   for (var i = 0; i < histOrds.length; i++) {
-    ords = scaleOrds(histOrds[i].value.x,histOrds[i].value.y)
-    var point = {x:ords.x, y:ords.y, value:0.1, date:new Date(histOrds[i]._id)};
+    ords = scaleOrds(histOrds[i]._id.x,histOrds[i]._id.y)
+    var point = {x:ords.x, y:ords.y, value:0.1, date:new Date(histOrds[i]._id.date)};
     histPoints.push(point);
   }
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";

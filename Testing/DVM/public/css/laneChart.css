@@ -43,11 +43,11 @@
 }
 
 .dev1{
-	stroke: #209802;
+	stroke: #009e73;
 }
 
 .dev2{
-	stroke: #000b9e;
+	stroke: #0072b3;
 }
 
 .brush .extent {
@@ -60,11 +60,12 @@ div.HistTooltip {
 	 position: absolute;
 	 width: auto;
 	 font-weight: bold;
+	 color:rgb(142, 176, 163);
 	 height: auto;
 	 opacity: 0.5;
-	 border: 3px solid #ffcc00;
+	 border: 3px solid #dbd9d9;
 	 padding: 10px;
-	 background-color:rgba(255, 254, 161, 0.84);
+	 background-color:rgba(9, 9, 9, 0.84);
 	 -webkit-border-radius: 10px;
 	 -moz-border-radius: 10px;
 	 border-radius: 10px;

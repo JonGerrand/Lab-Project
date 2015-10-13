@@ -136,7 +136,6 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
@@ -155,6 +154,20 @@ var MovementRecord = function(model){
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   } //getPosition
+  this.getDateRange_Agg = function(min,max,socket){
+    var aggPipelineObject = [
+      {$match: {TimeStamp:{$gt: new Date(min), $lt: new Date(max)}}},
+      {$group: {_id:{date:'$TimeStamp', id:'$DeviceID', x:'$xPos', y:'$yPos'}}}
+    ];
+    this.model.aggregate(aggPipelineObject, function(err, results){
+      if(err){
+        console.error(err);
+      } else{
+        socket.emit('httpServer_histOrd', results);
+        // console.log(results);
+      }
+    });//aggregate
+  }//getDateRange_Agg
   this.getAvgPos = function(min,max,socket){
     var aggPipelineObject = [
       {$match: {TimeStamp:{$gte: new Date(min), $lte: new Date(max)}}},
@@ -175,11 +188,10 @@ var MovementRecord = function(model){
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
 // mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
-// mongoose.connect('mongodb://192.168.1.3/Indoor_pairing');
-mongoose.connect('mongodb://192.168.43.192/Outdoor_pre_7m');
-// mongoose.connect('mongodb://192.168.43.192/Outdoor_pre_5m');
-// mongoose.connect('mongodb://192.168.43.192/Indoor_pre_7m');
-// mongoose.connect('mongodb://192.168.43.192/Indoor_pre_5m');
+// mongoose.connect('mongodb://192.168.43.192/Indoor_post_5m');
+mongoose.connect('mongodb://192.168.43.192/Indoor_pairing');
+// mongoose.connect('mongodb://192.168.43.192/Long_term_test');
+
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -257,9 +269,8 @@ webSock.sockets.on("connection", function(socket){
     // Data handling from browser
     socket.on('Temporal_query',function(data){
       // movementHistory.getDateRange(data.min,data.max,socket);
-      movementHistory.getAvgPos("Tue Oct 06 2015 14:22:24 GMT+0200 (SAST)",
-                                "Tue Oct 06 2015 14:23:56 GMT+0200 (SAST)",socket);
-      // movementHistory.getPosition(data.min,data.max,data.min,data.max,socket);
+      movementHistory.getDateRange_Agg(data.min,data.max,socket);
+      // movementHistory.getAvgPos(data.min,data.max,socket);
       }); //Websocket received data
     }); //tcpClient connection
   }); //Websocket connection
