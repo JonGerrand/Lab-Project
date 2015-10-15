@@ -21,8 +21,8 @@ $(function () {
    // ---===Helper functions===---
    // Data is received in the form of a MapReduce Aggregation Result
    var performZoneClassification = function(data){
-     var x_dim = 5;
-     var y_dim = 5;
+     var x_dim = 15;
+     var y_dim = 15;
      var zonedArray = [];
      // All zones are parallelograms
      var zone1 = {xMin:0, xMax:x_dim/2, yMin:0, yMax: y_dim/2};
@@ -32,31 +32,32 @@ $(function () {
      // Assign data to zones
      for (var i = 0; i < data.length; i++) {
        // Zone 1 Classification
-       if((data[i].value.x > zone1.xMin) && (data[i].value.x < zone1.xMax) &&
-          (data[i].value.y > zone1.yMin) && (data[i].value.y < zone1.yMax)){
-            zonedArray.push({ID:data[i].value.id, date:data[i]._id,
+       if((data[i]._id.x > zone1.xMin) && (data[i]._id.x < zone1.xMax) &&
+          (data[i]._id.y > zone1.yMin) && (data[i]._id.y < zone1.yMax)){
+            zonedArray.push({ID:data[i]._id.id, date:data[i]._id.date,
                              zone:"Zone 1"});
           }//If
         // Zone 2 Classification
-        if((data[i].value.x > zone2.xMin) && (data[i].value.x < zone2.xMax) &&
-           (data[i].value.y > zone2.yMin) && (data[i].value.y < zone2.yMax)){
-             zonedArray.push({ID:data[i].value.id, date:data[i]._id,
+        if((data[i]._id.x > zone2.xMin) && (data[i]._id.x < zone2.xMax) &&
+           (data[i]._id.y > zone2.yMin) && (data[i]._id.y < zone2.yMax)){
+             zonedArray.push({ID:data[i]._id.id, date:data[i]._id.date,
                               zone:"Zone 2"});
            }//If
        // Zone 3 Classification
-       if((data[i].value.x > zone3.xMin) && (data[i].value.x < zone3.xMax) &&
-          (data[i].value.y > zone3.yMin) && (data[i].value.y < zone3.yMax)){
-            zonedArray.push({ID:data[i].value.id, date:data[i]._id,
+       if((data[i]._id.x > zone3.xMin) && (data[i]._id.x < zone3.xMax) &&
+          (data[i]._id.y > zone3.yMin) && (data[i]._id.y < zone3.yMax)){
+            zonedArray.push({ID:data[i]._id.id, date:data[i]._id.date,
                              zone:"Zone 3"});
           }//If
       // Zone 4 Classification
-      if((data[i].value.x > zone4.xMin) && (data[i].value.x < zone4.xMax) &&
-         (data[i].value.y > zone4.yMin) && (data[i].value.y < zone4.yMax)){
-           zonedArray.push({ID:data[i].value.id, date:data[i]._id,
+      if((data[i]._id.x > zone4.xMin) && (data[i]._id.x < zone4.xMax) &&
+         (data[i]._id.y > zone4.yMin) && (data[i]._id.y < zone4.yMax)){
+           zonedArray.push({ID:data[i]._id.id, date:data[i]._id.date,
                             zone:"Zone 4"});
          }//If
      }//for
      return zonedArray
+     console.log(zonedArray);
    };//performZoneClassification
    // Segment data into continuous lanes
    var laneDataFormation = function(zonedData){
@@ -83,7 +84,7 @@ $(function () {
      var currentLaneDev2 = "";
      // create lane items
      for (var i = 0; i < zonedData.length; i++) {
-       if(zonedData[i].ID === "iPhone"){
+       if(zonedData[i].ID === "~iPhone"){
          if(zonedData[i].zone !== currentLaneDev1){
            if(i === 0){
              // Format new entry
@@ -101,7 +102,7 @@ $(function () {
              desc1 = "Time in reigion: " + parseFloat(Math.round(((tDiff1 % 86400000) % 3600000) / 60000)) +
                       "min, " + parseFloat(Math.round((((tDiff1 % 86400000) % 3600000) % 60000) / 1000))+"sec";
              laneItems.push({id:IDcounter, name:name1, lane:lane1, start:stDate1,
-                             end:endDate1, desc:desc1, color:"#209802",
+                             end:endDate1, desc:desc1, color:"#009e73",
                              dev:"dev1"});
              // Format new entry
              ID1 = IDcounter;
@@ -113,7 +114,7 @@ $(function () {
            }//else
          }//if zonedData[i].zone !== currentLaneDev1
        }//if iPhone
-       if(zonedData[i].ID === "iPad"){
+       if(zonedData[i].ID === "~iPad"){
          if(i === 0){
            // Format new entry
            name2 = zonedData[0].ID;
@@ -130,7 +131,7 @@ $(function () {
            desc2 = "Time in reigion: " + parseFloat(Math.round(((tDiff2 % 86400000) % 3600000) / 60000)) +
                     "min, " + parseFloat(Math.round((((tDiff2 % 86400000) % 3600000) % 60000) / 1000))+"sec";
            laneItems.push({id:IDcounter, name:name2, lane:lane2, start:stDate2,
-                           end:endDate2, desc:desc2, color:"#000b9e",
+                           end:endDate2, desc:desc2, color:"#0072b3",
                            dev:"dev2"});
            // Format new entry
            ID2 = IDcounter;
@@ -250,6 +251,9 @@ $('#TrialButton').click(function(){
 // Receive Temporal data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
   d3.select("svg").remove();
+  histOrds.sort(function(a,b){
+    return new Date(a._id.date) - new Date(b._id.date);
+  });
   createLaneChart(GenerateLaneData(histOrds));
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";
   $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");

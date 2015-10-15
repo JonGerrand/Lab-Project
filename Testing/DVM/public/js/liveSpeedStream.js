@@ -81,7 +81,7 @@ svg.append("text")
     .attr("y", height + margin.bottom -2)
     .attr("x", width/2)
     .attr("class", "axisText")
-    .text("Current Time (H:m) / (:s)");
+    .text("Current Time (H:m) or (:s)");
 
 var axisY = svg.append("g")
     .attr("class", "y axis")

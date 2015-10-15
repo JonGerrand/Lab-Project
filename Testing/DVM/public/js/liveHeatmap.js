@@ -4,6 +4,17 @@
   // Scaling variables
   var x_pixle = $('#heatmapContainerWrapper').width();
   var y_pixel = $('#heatmapContainerWrapper').height();
+
+  // Define heatmap scales
+  var heatXscale = d3.scale.linear()
+      .domain([-5,10])
+      .range([0, x_pixle]);
+
+  var heatYscale = d3.scale.linear()
+      .domain([-5,10])
+      .range([0, y_pixel]);
+
+
   var ordContainer = {};
   // Device name declaration
   var deviceNameArray = ['',''];
@@ -36,12 +47,8 @@
   }
   // Scale received values
   function scaleOrds(x,y){
-    var x_fixed = 5;
-    var y_fixed = 5;
-    var x_scaled = x/x_fixed;
-    var y_scaled = y/y_fixed;
-    var x_mapped = (x_scaled*x_pixle);
-    var y_mapped = (y_scaled*y_pixel);
+    var x_mapped = heatXscale(x);
+    var y_mapped = heatYscale(y);
     return {x:x_mapped, y:y_mapped};
   }
 // -----------------------
@@ -53,7 +60,7 @@
     radius: 10,
     blur: .90,
     // backgroundColor with alpha so you can see through it
-    backgroundColor: 'rgba(251, 252, 252, 0.12)'
+    backgroundColor: 'rgba(251, 252, 252, 0)'
   });
   var heatmapContainer = document.getElementById('heatmapContainerWrapper');
 
@@ -77,7 +84,7 @@
   heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
     var x = e.layerX;
     var y = e.layerY;
-    updateToolTip(x,y,"iPad");
+    updateToolTip(x,y,"~iPhone");
     heatmap.addData({ x: x, y: y, value: 0.1 });
   };
 

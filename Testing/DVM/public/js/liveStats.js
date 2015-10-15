@@ -3,8 +3,10 @@ var dev1Freq = 0;
 var dev2Freq = 0;
 var dev1CurrentStatus = 0;
 var dev2CurrentStatus = 0;
-var offLimitZone = 4; // Presence of a device within this zone will cause a
+var offLimitZone = 5; // Presence of a device within this zone will cause a
                       // warning
+var offLimitDev1 = 0;
+var offLimitDev2 = 0;
 var currentZone = 0;
 
 // ---===Helper functions===---
@@ -31,34 +33,39 @@ dev2Timer = new deviceTimer("2");
 
 // ---===Zone detection===---
 var performZoneClassification = function(x,y){
-  var x_dim = 5;
-  var y_dim = 5;
+  // var x_dim = 4;
+  // var y_dim = 4;
   // All zones are parallelograms
-  var zone1 = {xMin:0, xMax:x_dim/2, yMin:0, yMax: y_dim/2};
-  var zone2 = {xMin:x_dim/2, xMax:x_dim, yMin:0, yMax: y_dim/2};
-  var zone3 = {xMin:0, xMax:x_dim/2, yMin:y_dim/2, yMax: y_dim};
-  var zone4 = {xMin:x_dim/2, xMax:x_dim, yMin:y_dim/2, yMax: y_dim};
+  // var zone1 = {xMin:0, xMax:x_dim/2, yMin:0, yMax: y_dim/2};
+  // var zone2 = {xMin:x_dim/2, xMax:x_dim, yMin:0, yMax: y_dim/2};
+  // var zone3 = {xMin:0, xMax:x_dim/2, yMin:y_dim/2, yMax: y_dim};
+  // var zone4 = {xMin:x_dim/2, xMax:x_dim, yMin:y_dim/2, yMax: y_dim};
+  var zone5 = {xMin:0, xMax:5, yMin:0, yMax:5}
   // Assign data to zones
   // Zone 1 Classification
-  if((x > zone1.xMin) && (x < zone1.xMax) &&
-     (y > zone1.yMin) && (y < zone1.yMax)){
-       return 1;
-     }//If
-   // Zone 2 Classification
-   if((x > zone2.xMin) && (x < zone2.xMax) &&
-      (y > zone2.yMin) && (y < zone2.yMax)){
-        return 2;
-      }//If
-  // Zone 3 Classification
-  if((x > zone3.xMin) && (x < zone3.xMax) &&
-     (y > zone3.yMin) && (y < zone3.yMax)){
-       return 3;
-     }//If
- // Zone 4 Classification
- if((x > zone4.xMin) && (x < zone4.xMax) &&
-    (y > zone4.yMin) && (y < zone4.yMax)){
-      return 4;
-    }//If
+  //  if((x > zone1.xMin) && (x < zone1.xMax) &&
+  //     (y > zone1.yMin) && (y < zone1.yMax)){
+  //       return 1;
+  //     }//If
+  //   // Zone 2 Classification
+  //   if((x > zone2.xMin) && (x < zone2.xMax) &&
+  //      (y > zone2.yMin) && (y < zone2.yMax)){
+  //        return 2;
+  //      }//If
+  //  // Zone 3 Classification
+  //  if((x > zone3.xMin) && (x < zone3.xMax) &&
+  //     (y > zone3.yMin) && (y < zone3.yMax)){
+  //       return 3;
+  //     }//If
+  // // Zone 4 Classification
+  // if((x > zone4.xMin) && (x < zone4.xMax) &&
+  //    (y > zone4.yMin) && (y < zone4.yMax)){
+  //      return 4;
+  //    }//If
+if((x > zone5.xMin) && (x < zone5.xMax) &&
+   (y > zone5.yMin) && (y < zone5.yMax)){
+     return 5;
+   }//If
   return 0;
 };//performZoneClassification
 // ---------------------------
@@ -77,13 +84,15 @@ Websocket.on('httpServer_stats',function(data){
         dev1CurrentStatus = 1;
       }//dev1CurrentStatus
       // Trigger warning if restricted zone breach is detected
-      if(currentZone === offLimitZone){
+      if(currentZone === offLimitZone && offLimitDev1 === 0){
         alertSequence(data.ID + " has entered the Zone");
+        offLimitDev1 = 1;
       }
     }//currentZone !== 0
     else{
       dev1Timer.stopTimer();
       dev1CurrentStatus = 0;
+      offLimitDev1 = 0;
     }//data.areaStatus === 0
   }//stat1ID === data.ID
 
@@ -99,13 +108,15 @@ Websocket.on('httpServer_stats',function(data){
         dev2CurrentStatus = 1;
       }//dev1CurrentStatus
       // Trigger warning if restricted zone breach is detected
-      if(currentZone === offLimitZone){
+      if(currentZone === offLimitZone && offLimitDev2 === 0){
         alertSequence(data.ID + " has entered the Zone");
+        offLimitDev2 = 1;
       }//currentZone === offLimitZone
     }//currentZone !== 0
     else{
       dev2Timer.stopTimer();
       dev2CurrentStatus = 0;
+      offLimitDev2 = 0;
     }//data.areaStatus === 0
   }//stat1ID === data.ID
 });

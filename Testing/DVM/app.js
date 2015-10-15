@@ -17,7 +17,7 @@ var tcpSock = require('net');
 
 //SARM connection configuration
 var tcp_PORT = 7000;
-var tcp_HOST = '192.168.1.11';
+var tcp_HOST = '192.168.43.192';
 
 //Routing Config for express
 var routes = require('./routes/index');
@@ -83,7 +83,7 @@ var StreamDataUnpacker = function(trackDevice){
           this.radius2 = unpackedString[5];
         }
         if(getType(unpackedString[5]) === 'string'){
-          this.radius3 = unpackedString[5];
+          this.radius3 = unpackedString[6];
         }
         return true;
       } else {
@@ -114,8 +114,8 @@ var StreamDataUnpacker = function(trackDevice){
   }
 }
 var DataUnpackerArray = [];
-var DataUnpacker_devOne = new StreamDataUnpacker("iPhone");
-var DataUnpacker_devTwo = new StreamDataUnpacker("iPad");
+var DataUnpacker_devOne = new StreamDataUnpacker("~iPhone");
+var DataUnpacker_devTwo = new StreamDataUnpacker("~iPad");
 DataUnpackerArray.push(DataUnpacker_devOne);
 DataUnpackerArray.push(DataUnpacker_devTwo);
 //-----------------------------------------------
@@ -136,7 +136,6 @@ var MovementRecord = function(model){
     queryObject.out = {inline:1};
     this.model.mapReduce(queryObject,function(err,results,stats){
       if(err) return console.error(err);
-      console.log(stats);
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   }; //getDateRange
@@ -155,13 +154,44 @@ var MovementRecord = function(model){
       socket.emit('httpServer_histOrd',results);
     }); //mapReduce
   } //getPosition
+  this.getDateRange_Agg = function(min,max,socket){
+    var aggPipelineObject = [
+      {$match: {TimeStamp:{$gt: new Date(min), $lt: new Date(max)}}},
+      {$group: {_id:{date:'$TimeStamp', id:'$DeviceID', x:'$xPos', y:'$yPos'}}}
+    ];
+    this.model.aggregate(aggPipelineObject, function(err, results){
+      if(err){
+        console.error(err);
+      } else{
+        socket.emit('httpServer_histOrd', results);
+        // console.log(results);
+      }
+    });//aggregate
+  }//getDateRange_Agg
+  this.getAvgPos = function(min,max,socket){
+    var aggPipelineObject = [
+      {$match: {TimeStamp:{$gte: new Date(min), $lte: new Date(max)}}},
+      {$group: {_id: '$DeviceID', xPos:{$avg:'$xPos'}, yPos:{$avg:'$yPos'}}}
+    ];
+    this.model.aggregate(aggPipelineObject, function(err, results){
+      if(err){
+        console.error(err);
+      } else{
+        socket.emit('httpServer_avgX', results);
+        // console.log(results);
+      }
+    })//aggregate
+  }; //getDateRange
 } //MovementRecord
 //-------------------------------------------------
 
 //------------====Mongoose Setup====------------
 //-==Establish MongoBD connection==-
-// mongoose.connect('mongodb://192.168.1.11/EndToEnd_Atrium_1');
-mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
+// mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
+// mongoose.connect('mongodb://192.168.43.192/Indoor_post_5m');
+mongoose.connect('mongodb://192.168.43.192/Indoor_pairing');
+// mongoose.connect('mongodb://192.168.43.192/Long_term_test');
+
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -205,7 +235,7 @@ webSock.sockets.on("connection", function(socket){
       // console.log("Received Data: " + data);
       if(data.search("SARM") === -1){
         // Assign data to correct device aggregator
-        console.log("Sink");
+        console.log(data);
         for (var i = 0; i < DataUnpackerArray.length; i++) {
           if(DataUnpackerArray[i].unpackData(data) === true){
             // Packet format: [x,y,DevName]
@@ -238,8 +268,9 @@ webSock.sockets.on("connection", function(socket){
       });
     // Data handling from browser
     socket.on('Temporal_query',function(data){
-      movementHistory.getDateRange(data.min,data.max,socket);
-      // movementHistory.getPosition(data.min,data.max,data.min,data.max,socket);
+      // movementHistory.getDateRange(data.min,data.max,socket);
+      movementHistory.getDateRange_Agg(data.min,data.max,socket);
+      // movementHistory.getAvgPos(data.min,data.max,socket);
       }); //Websocket received data
     }); //tcpClient connection
   }); //Websocket connection

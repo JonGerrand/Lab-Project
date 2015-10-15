@@ -47,14 +47,14 @@ $('#TrialButton').click(function(){
 
 // Receive Temporal data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
-  var dev1Name = "iPhone";
-  var dev2Name = "iPad";
+  var dev1Name = "~iPhone";
+  var dev2Name = "~iPad";
   var dev1Data = [];
   var dev2Data = [];
   var stringGraphData = [];
   for (var i = 0; i < histOrds.length; i++) {
-    var point = {x:histOrds[i].value.x, y:histOrds[i].value.y, date:new Date(histOrds[i]._id), id:histOrds[i].value.id};
-    //This part of the code can be chaged to be scalable
+    var point = {x:histOrds[i]._id.x, y:histOrds[i]._id.y, date:new Date(histOrds[i]._id.date), id:histOrds[i]._id.id};
+    // var point = {x:histOrds[i].value.x, y:histOrds[i].value.y, date:new Date(histOrds[i]._id), id:histOrds[i].value.id};
     if(point.id === dev1Name){
       dev1Data.push(point);
     }
@@ -62,12 +62,19 @@ Websocket.on('httpServer_histOrd',function(histOrds){
       dev2Data.push(point);
     }
   }
+  // Sort received data
+  dev1Data.sort(function(a,b){
+    return new Date(a.date) - new Date(b.date);
+  });
+  dev2Data.sort(function(a,b){
+    return new Date(a.date) - new Date(b.date);
+  });
   // Push resultant data to vis object
   stringGraphData.push(dev1Data);
   stringGraphData.push(dev2Data);
-  console.log(stringGraphData);
   $('#TrialButton').get(0).lastChild.nodeValue = "Submit Date Range";
   $("#mapRedLoading").toggleClass("glyphicon glyphicon-refresh glyphicon-refresh-animate");
-  d3.select("svg").remove();
+  d3.select("#stringVis").html("");
+  d3.select("#stringBrush").html("");
   createStringGraph(stringGraphData);
 });

@@ -5,8 +5,8 @@
 
 #heatmapContainerWrapper{
 	width: auto;
-	height: 1116px;
-  background: url(../img/perimeter.png) no-repeat;
+	height: 800px;
+	background: url(../img/Background_grid.png) no-repeat;
   background-size: 100% 100%;
 }
 
@@ -14,9 +14,9 @@
   position:absolute;
   left:0;
   top:0;
-  background:rgba(32, 152, 2, 0.8);
+  background:rgba(0, 158, 115,0.8);
   color:white;
-  font-size:14px;
+  font-size:20px;
   padding:5px;
   line-height:18px;
   display:none;
@@ -26,10 +26,31 @@
   position:absolute;
   left:0;
   top:0;
-  background:rgba(0, 11, 158, 0.8);
+  background:rgba(0, 114, 178,0.8);
   color:white;
-  font-size:14px;
+  font-size:20px;
   padding:5px;
   line-height:18px;
   display:none;
+}
+
+#heatmapBrush{
+	width: auto;
+  height: auto;
+}
+
+.brush .extent {
+	stroke: gray;
+	fill: blue;
+	fill-opacity: .165;
+}
+
+.axis line{
+	stroke: rgb(21, 22, 20);
+	stroke-width: 2;
+	}
+
+.axis path {
+	stroke: rgb(21, 22, 20);
+	stroke-width: 2;
 }
