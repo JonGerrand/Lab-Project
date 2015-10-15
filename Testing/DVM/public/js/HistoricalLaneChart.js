@@ -21,13 +21,13 @@ $(function () {
    // ---===Helper functions===---
    // Data is received in the form of a MapReduce Aggregation Result
    var performZoneClassification = function(data){
-     var x_dim = 15;
-     var y_dim = 15;
+     var x_dim = 10;
+     var y_dim = 10;
      var zonedArray = [];
      // All zones are parallelograms
-     var zone1 = {xMin:0, xMax:x_dim/2, yMin:0, yMax: y_dim/2};
-     var zone2 = {xMin:x_dim/2, xMax:x_dim, yMin:0, yMax: y_dim/2};
-     var zone3 = {xMin:0, xMax:x_dim/2, yMin:y_dim/2, yMax: y_dim};
+     var zone1 = {xMin:-5, xMax:x_dim/2, yMin:-5, yMax: y_dim/2};
+     var zone2 = {xMin:x_dim/2, xMax:x_dim, yMin:-5, yMax: y_dim/2};
+     var zone3 = {xMin:-5, xMax:x_dim/2, yMin:y_dim/2, yMax: y_dim};
      var zone4 = {xMin:x_dim/2, xMax:x_dim, yMin:y_dim/2, yMax: y_dim};
      // Assign data to zones
      for (var i = 0; i < data.length; i++) {
@@ -56,8 +56,8 @@ $(function () {
                             zone:"Zone 4"});
          }//If
      }//for
-     return zonedArray
      console.log(zonedArray);
+     return zonedArray
    };//performZoneClassification
    // Segment data into continuous lanes
    var laneDataFormation = function(zonedData){
@@ -84,7 +84,7 @@ $(function () {
      var currentLaneDev2 = "";
      // create lane items
      for (var i = 0; i < zonedData.length; i++) {
-       if(zonedData[i].ID === "~iPhone"){
+       if(zonedData[i].ID === "Kathy"){
          if(zonedData[i].zone !== currentLaneDev1){
            if(i === 0){
              // Format new entry
@@ -114,7 +114,7 @@ $(function () {
            }//else
          }//if zonedData[i].zone !== currentLaneDev1
        }//if iPhone
-       if(zonedData[i].ID === "~iPad"){
+       if(zonedData[i].ID === "Noel"){
          if(i === 0){
            // Format new entry
            name2 = zonedData[0].ID;
@@ -144,6 +144,7 @@ $(function () {
        }//if iPad
      }//for
      return laneItems;
+     console.log(laneItems);
    }//laneDataFormation
    // Parse data for insertion into Lane Chart
    var GenerateLaneData = function(chartdata) {

@@ -47,8 +47,8 @@ $('#TrialButton').click(function(){
 
 // Receive Temporal data from query
 Websocket.on('httpServer_histOrd',function(histOrds){
-  var dev1Name = "~iPhone";
-  var dev2Name = "~iPad";
+  var dev1Name = "Kathy";
+  var dev2Name = "Noel";
   var dev1Data = [];
   var dev2Data = [];
   var stringGraphData = [];

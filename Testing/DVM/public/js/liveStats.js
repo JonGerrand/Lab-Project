@@ -85,7 +85,7 @@ Websocket.on('httpServer_stats',function(data){
       }//dev1CurrentStatus
       // Trigger warning if restricted zone breach is detected
       if(currentZone === offLimitZone && offLimitDev1 === 0){
-        alertSequence(data.ID + " has entered the Zone");
+        alertSequence(data.ID + " has entered the restricted area");
         offLimitDev1 = 1;
       }
     }//currentZone !== 0
@@ -109,7 +109,7 @@ Websocket.on('httpServer_stats',function(data){
       }//dev1CurrentStatus
       // Trigger warning if restricted zone breach is detected
       if(currentZone === offLimitZone && offLimitDev2 === 0){
-        alertSequence(data.ID + " has entered the Zone");
+        alertSequence(data.ID + " has entered the restricted area");
         offLimitDev2 = 1;
       }//currentZone === offLimitZone
     }//currentZone !== 0

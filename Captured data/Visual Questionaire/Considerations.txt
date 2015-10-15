@@ -1,0 +1,17 @@
+• Perform an activity and measure if it caused the misrepresentation of data.
+
+• How freely could the visuals be explored.
+
+	– Rate level of difficulty to perform a task. 
+
+• Frustration levels at certain components.
+
+	– Fustration levels to be measured on a Likert scale.
+
+• Data related questions - Get a user to perform a task and then evaluate. 
+
+	– Record confidence level as a metric.
+
+• Allow for free text insertion and ideas to be offered. 
+
+• Flexibility of filtering.

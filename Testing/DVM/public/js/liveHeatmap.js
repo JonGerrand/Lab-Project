@@ -79,14 +79,12 @@
     heatmap.addData({ x: ordContainer.x, y: ordContainer.y , value: 0.1 });
   });
 
-  console.log($('#heatmapContainerWrapper').width());
-
-  heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
-    var x = e.layerX;
-    var y = e.layerY;
-    updateToolTip(x,y,"~iPhone");
-    heatmap.addData({ x: x, y: y, value: 0.1 });
-  };
+  // heatmapContainer.onmousemove = heatmapContainer.ontouchmove = function(e) {
+  //   var x = e.layerX;
+  //   var y = e.layerY;
+  //   updateToolTip(x,y,"~iPhone");
+  //   heatmap.addData({ x: x, y: y, value: 0.1 });
+  // };
 
   heatmapContainer.onmouseout = function(){
     tooltip2.style.display = 'none';

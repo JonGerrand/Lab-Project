@@ -17,6 +17,9 @@ Websocket.on('httpServer_vel',function(data){
     dev1Data.xVel = (dev1Data.currX - dev1Data.prevX)/((dev1Data.currDate - dev1Data.prevDate)*1e-3);
     dev1Data.yVel = (dev1Data.currY - dev1Data.prevY)/((dev1Data.currDate - dev1Data.prevDate)*1e-3);
     dev1Data.vel = Math.sqrt(Math.pow(dev1Data.xVel,2) + Math.pow(dev1Data.yVel,2));
+    if(isNaN(dev1Data.vel)){
+      dev1Data.vel = 0;
+    };
   }
   if(deviceNameArray[1] === data.ID){
     dev2Data.prevX = dev2Data.currX;
@@ -28,6 +31,9 @@ Websocket.on('httpServer_vel',function(data){
     dev2Data.xVel = (dev2Data.currX - dev2Data.prevX)/((dev2Data.currDate - dev2Data.prevDate)*1e-3);
     dev2Data.yVel = (dev2Data.currY - dev2Data.prevY)/((dev2Data.currDate - dev2Data.prevDate)*1e-3);
     dev2Data.vel = Math.sqrt(Math.pow(dev2Data.xVel,2) + Math.pow(dev2Data.yVel,2));
+    if(isNaN(dev2Data.vel)){
+      dev2Data.vel = 0;
+    };
   }
 });
 

@@ -114,8 +114,8 @@ var StreamDataUnpacker = function(trackDevice){
   }
 }
 var DataUnpackerArray = [];
-var DataUnpacker_devOne = new StreamDataUnpacker("~iPhone");
-var DataUnpacker_devTwo = new StreamDataUnpacker("~iPad");
+var DataUnpacker_devOne = new StreamDataUnpacker("Kathy");
+var DataUnpacker_devTwo = new StreamDataUnpacker("Noel");
 DataUnpackerArray.push(DataUnpacker_devOne);
 DataUnpackerArray.push(DataUnpacker_devTwo);
 //-----------------------------------------------
@@ -189,7 +189,7 @@ var MovementRecord = function(model){
 //-==Establish MongoBD connection==-
 // mongoose.connect('mongodb://192.168.1.3/PedestrianTestingDB');
 // mongoose.connect('mongodb://192.168.43.192/Indoor_post_5m');
-mongoose.connect('mongodb://192.168.43.192/Indoor_pairing');
+mongoose.connect('mongodb://192.168.43.192/VisualDemo');
 // mongoose.connect('mongodb://192.168.43.192/Long_term_test');
 
 var PedDB = mongoose.connection;

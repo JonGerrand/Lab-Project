@@ -160,10 +160,10 @@
                               <table class="table table-bordered table-hover table-striped">
                                   <thead>
                                       <tr>
-                                          <th>Device Name</th>
+                                          <th>Name</th>
                                           <th>ID Color</th>
-                                          <th>Time in Area (sec)</th>
-                                          <th>Entry frequency</th>
+                                          <th>Time in Restricted Area (sec)</th>
+                                          <th>Entry count</th>
                                       </tr>
                                   </thead>
                                   <tbody>
@@ -209,7 +209,7 @@
     <!-- /#wrapper -->
 
     <!-- On page content -->
-    <audio src="audio/intruder.wav" id="AlertTone" autostart="false"></audio>
+    <audio src="audio/Intruder-Darren_E-7448_hifi.wav" id="AlertTone" autostart="false"></audio>
 
     <!--  ****SCRIPTS***  -->
 
