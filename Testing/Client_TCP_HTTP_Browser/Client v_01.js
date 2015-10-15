@@ -12,31 +12,90 @@ var genRandomNum = function(min,max){
   return (Math.random() * max) + min;
 }
 
-var sendArray = "DeviceOne," + genRandomNum(1,500) + "," + genRandomNum(1,500) + ",1442404311.781545";
-console.log(sendArray);
-
-client.connect(7000, '192.168.1.11', function(){
+client.connect(7000, '192.168.43.192', function(){
   console.log('Connected to remote Server');
 
+  // setInterval(function(){
+  //   console.log('Streaming Data: ' + xData);
+  //   xData = xData +1;
+  //   if(genRandomNum(0,1) > 0.5){device = "~iPhone";}
+  //   else{device = "~iPad"};
+  //   client.write( device + "," + (genRandomNum(0,15)-genRandomNum(0,5)) + "," + (genRandomNum(0,15)-genRandomNum(0,5)) + "," +
+  //               (1442404311.781545+xData).toString() + "," + genRandomNum(0,3) +
+  //               "," + genRandomNum(0,3) + "," + genRandomNum(0,3));
+  // },40);
+
+  // Code for live simulation
+  var device1 = "Kathy";
+  var device2 = "Noel";
+  var xIncrement = 0.1;
+  var yIncrement = 0;
+  var dev1_currX = -2;
+  var dev1_currY = -2;
+  var dev2_currX = -3;
+  var dev2_currY = 10;
+  var step = 0;
   setInterval(function(){
-    console.log('Streaming Data: ' + xData);
-    xData = xData +1;
-    if(genRandomNum(0,1) > 0.5){device = "iPhone";}
-    else{device = "iPad"};
-    client.write( device + "," + (genRandomNum(0,5)-genRandomNum(0,0)) + "," + (genRandomNum(0,5)-genRandomNum(0,0)) + "," +
-                (1442404311.781545+xData).toString() + "," + genRandomNum(0,3) +
-                "," + genRandomNum(0,3) + "," + genRandomNum(0,3));
-  },50);
+    xData += 1;
+    if(step === 0){
+      dev1_currX += xIncrement;
+      dev1_currY += yIncrement;
+      client.write( device1 + "," + dev1_currX + "," + dev1_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
+      if(dev1_currX >= 3){
+        step = 1;
+        xIncrement = 0;
+        yIncrement = 0.08;
+      }//if dev1_currX > 3
+    }//if step === 0
 
-  // rl.prompt();
-  // rl.on('line', function(line){
-  //   if (line === "close") rl.close();
-  //   client.write(line);
-  //   rl.prompt();
-  // }).on('close', function(){
-  //   process.exit(0);
-  // })
+    if(step === 1){
+      dev1_currX += xIncrement;
+      dev1_currY += yIncrement;
+      dev2_currY -= 0.08;
+      client.write( device1 + "," + dev1_currX + "," + dev1_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
 
+      setTimeout(function(){
+        client.write( device2 + "," + dev2_currX + "," + dev2_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
+      },20);
+      if(dev1_currY >= 6){
+        step = 2;
+        xIncrement = -0.1;
+        yIncrement = 0;
+      }//if dev1_currX > 3
+    }//if step === 0
+
+    if(step === 2){
+      dev1_currX += xIncrement;
+      dev1_currY += yIncrement;
+      client.write( device1 + "," + dev1_currX + "," + dev1_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
+      if(dev1_currX <= -2){
+        step = 3;
+        xIncrement = 0;
+        yIncrement = -0.1;
+      }//if dev1_currX > 3
+    }//if step === 0
+
+    if(step === 3){
+      dev1_currX += xIncrement;
+      dev1_currY += yIncrement;
+      dev2_currY += 0.1;
+      client.write( device1 + "," + dev1_currX + "," + dev1_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
+      setTimeout(function(){
+        client.write( device2 + "," + dev2_currX + "," + dev2_currY + "," +
+                    (1442404311.781545+xData).toString() + "," + 1 + "," + 1 + "," + 1);
+      },20);
+      if(dev1_currY <= -2){
+        step = 0;
+        xIncrement = 0.1;
+        yIncrement = 0;
+      }//if dev1_currX > 3
+    }//if step === 0
+  },60);
 });
 
 client.on('data', function(data){

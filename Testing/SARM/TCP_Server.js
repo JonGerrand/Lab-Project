@@ -9,7 +9,7 @@ var net = require('net');
 var mongoose = require('mongoose');
 
 //Set SARM Parameters
-var HOST = '192.168.1.11';
+var HOST = '192.168.43.192';
 var PORT = 7000;
 sinkList = [];
 var replicated = 0;
@@ -44,7 +44,7 @@ function DSMAgentException(message){
 // DSM Agent Constructor
 function DSMAgent(MongoModel){
   // Data members
-  this.channelThreshhold = 10*100; //Increase during testing
+  this.channelThreshhold = 10*10; //Increase during testing
   this.MongoModel = MongoModel;
   this.agentChannel = [];
   // Data functions
@@ -174,10 +174,16 @@ function DataUnpacker(){
 //----====Unique Device Handling====----
 //--------------------------------------
 
-
 //-==Establish MongoBD connection==-
-// mongoose.connect('mongodb://192.168.1.3/EndToEnd_Atrium_1');
-mongoose.connect('mongodb://192.168.1.11/PedestrianTestingDB');
+// mongoose.connect('mongodb://192.168.1.3/Long_term_test');
+// mongoose.connect('mongodb://192.168.1.3/Indoor_post_5m');
+// mongoose.connect('mongodb://192.168.1.3/Indoor_pairing');
+// mongoose.connect('mongodb://192.168.1.3/Outdoor_pre_7m');
+// mongoose.connect('mongodb://192.168.1.3/Outdoor_pre_5m');
+// mongoose.connect('mongodb://192.168.1.3/Indoor_pre_7m');
+// mongoose.connect('mongodb://192.168.1.3/Indoor_pre_5m');
+mongoose.connect('mongodb://192.168.43.192/VisualDemo');
+// mongoose.connect('mongodb://192.168.1.3/OpenDay_pre');
 var PedDB = mongoose.connection;
 PedDB.on('error', console.error.bind(console, 'connection error:'));
 // Define Schema
@@ -224,7 +230,7 @@ TCPserver.on('connection', function(sock){
       for (var i = 0; i < sinkList.length; i++) {
         sinkList[i].write(streamUnpacker.outputDVMData());
         dsmAggregator.pushDataPoint(streamUnpacker.outputDSMData());
-        console.log(streamUnpacker.outputDVMData());
+        console.log(streamUnpacker.outputDSMData());
       }
     }
     // Agent type-definition
@@ -259,17 +265,6 @@ TCPserver.on('connection', function(sock){
   });//Error Handling
   sock.on('close', function(error){
     // Determine if Sink was disconnected
-    // var remove = 0;
-    // for (var i = 0; i < sinkList.length; i++) {
-    //   if(sinkList[i].remoteAddress === sock.remoteAddress){
-    //     remove = 1;
-    //   }
-    // }
-    // if(remove != 0){
-    //   sinkList.pop(); // This is simplified under the assumption that only 1 DVM module is connected at one time
-    //   console.log("A Sink has been disconnected gracefully");
-    //   console.log("Sink Count: " + sinkList.length);
-    // }
     var sockIndex = sinkList.indexOf(sock);
     if(sockIndex !== -1){
       sinkList.splice(sockIndex,1);
